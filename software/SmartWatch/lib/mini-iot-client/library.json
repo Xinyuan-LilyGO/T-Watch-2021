@@ -1,0 +1,13 @@
+{
+    "name": "mini-iot-client",
+    "keywords": "iot, internet of things, iot client, mini iot client",
+    "description": "A client for the mini iot server. A simple way of logging data with an ESP8266.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pauls-3d-things/mini-iot-client.git",
+        "branch": "master"
+    },
+    "frameworks": "arduino",
+    "platforms": ["espressif8266","espressif32"],
+    "version": "1.0.3"
+}

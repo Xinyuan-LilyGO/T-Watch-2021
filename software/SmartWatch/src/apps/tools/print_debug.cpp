@@ -1,0 +1,111 @@
+
+#include "./apps/tools/print_debug.h"
+
+#include <gfx_util.h>
+#include <osw_app.h>
+#include <osw_hal.h>
+#include <osw_pins.h>
+
+#define SERIAL_BUF_SIZE 12
+
+uint8_t y = 32;
+uint8_t x = 52;
+void printStatus(OswHal *hal, const char *setting, const char *value)
+{
+  hal->getCanvas()->setCursor(x, y);
+  hal->getCanvas()->print(setting);
+  hal->getCanvas()->print(": ");
+  hal->getCanvas()->print(value);
+  y += 8;
+}
+void OswAppPrintDebug::setup(OswHal *hal)
+{
+
+#if defined(GPS_EDITION)
+  hal->gpsFullOnGpsGlonassBeidu();
+#endif
+}
+void OswAppPrintDebug::loop(OswHal *hal)
+{
+  static long loopCount = 0;
+  static String serialBuffer[SERIAL_BUF_SIZE];
+  static uint8_t serialPtr = 0;
+
+  if (hal->btnHasGoneDown(BUTTON_2))
+  {
+#if defined(GPS_EDITION)
+    hal->setDebugGPS(!hal->isDebugGPS());
+#endif
+  }
+
+  loopCount++;
+  hal->getCanvas()->fillRect(0, 0, 240, 240, rgb565(25, 25, 25));
+  hal->getCanvas()->setTextColor(rgb565(200, 255, 200));
+  hal->getCanvas()->setTextSize(1);
+
+  y = 32;
+  printStatus(hal, "compiled", __DATE__);
+  printStatus(hal, "compiled", __TIME__);
+
+  printStatus(hal, "pcf8563", hal->hasPCF8563() ? "OK" : "missing");
+  printStatus(hal, "BMA423", hal->hasBMA423() ? "OK" : "missing");
+  printStatus(hal, "QMC5883L", hal->hasQMC5883L() ? "OK" : "missing");
+  printStatus(hal, "CST816S", hal->hasCST816S() ? "OK" : "missing");
+  printStatus(hal, "STEP CNTR", String(hal->getStepCount(), 10).c_str());
+  printStatus(hal, "POWER", String(hal->getBatteryPercent(), 10).c_str());
+  /*Serial.print("STEP CNTR :");
+  Serial.println(hal->getStepCount());
+  printStatus(hal, "getPsramSize", String(ESP.getPsramSize(), 10).c_str());
+  printStatus(hal, "getFreePsram", String(ESP.getFreePsram(), 10).c_str());
+  printStatus(hal, "getMinFreePsram", String(ESP.getMinFreePsram(), 10).c_str());
+  printStatus(hal, "getMaxAllocPsram", String(ESP.getMaxAllocPsram(), 10).c_str()); */
+
+#if defined(GPS_EDITION)
+
+  printStatus(hal, "MicroSD present", hal->hasSD() ? "OK" : "missing");
+  printStatus(hal, "MicroSD (MB)",
+              hal->isSDMounted() ? String(String((uint)(hal->sdCardSize() / (1024 * 1024))) + " MB").c_str() : "N/A");
+
+  printStatus(hal, "GPS:", hal->hasGPS() ? "OK" : "missing");
+  printStatus(hal, "Sattelites: ", String(hal->gpsNumSatellites()).c_str());
+
+  printStatus(hal, "Latitude", String(hal->gpsLat()).c_str());
+  printStatus(hal, "Longitude", String(hal->gpsLon()).c_str());
+  if (!hal->isDebugGPS())
+  {
+    printStatus(hal, "Button 1", hal->btnIsDown(BUTTON_1) ? "DOWN" : "UP");
+    printStatus(hal, "Button 2", hal->btnIsDown(BUTTON_2) ? "DOWN" : "UP");
+    printStatus(hal, "Button 3", hal->btnIsDown(BUTTON_3) ? "DOWN" : "UP");
+
+    printStatus(hal, "Charging", hal->isCharging() ? "Yes" : "No");
+    printStatus(hal, "Battery (Analog)", String(analogRead(B_MON)).c_str());
+    // printStatus(hal, "Battery (Voltage)", (String(hal->getBatteryVoltage()) + " V").c_str());
+  }
+  else
+  {
+    serialPtr = 0;
+    while (hal->getSerialGPS().available())
+    {
+      String line = hal->getSerialGPS().readStringUntil('\n');
+      serialBuffer[serialPtr] = line;
+      serialPtr++;
+      serialPtr = serialPtr >= SERIAL_BUF_SIZE ? 0 : serialPtr;
+    }
+
+    hal->getCanvas()->setCursor(0, 120);
+    for (uint8_t i = 0; i < SERIAL_BUF_SIZE; i++)
+    {
+      hal->getCanvas()->println(serialBuffer[i]);
+    }
+  }
+#endif
+  hal->requestFlush();
+}
+
+void OswAppPrintDebug::stop(OswHal *hal)
+{
+#if defined(GPS_EDITION)
+  hal->gpsBackupMode();
+
+#endif
+}
