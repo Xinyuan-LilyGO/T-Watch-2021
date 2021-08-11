@@ -1,6 +1,6 @@
 <h1 align = "center">🌟 T-Watch-2021🌟</h1>
 
-![image]()
+![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/1.jpg)
 
 
 ## Quick start:
