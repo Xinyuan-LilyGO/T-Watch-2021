@@ -1,5 +1,6 @@
 <h1 align = "center">🌟 T-Watch-2021🌟</h1>
 
+## Pinout
 ![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/1.jpg)
 
 
@@ -17,3 +18,7 @@
 2. Search for the PlatformIO plug-in in the VSCODE extension and install it.
 3. After the installation is complete and the reload is completed, there will be a small house icon in the lower left corner. Click to display the Platformio IDE home page
 4. Go to file - > Open folder - > Select the software folder and click the (√) symbol in the lower left corner to compile (→) for upload.
+
+|  Product  |                                                            Product  Link                                                            |
+| :-------: | :---------------------------------------------------------------------------------------------------------------------------------: |
+| T-Watch-2021 | [Taobao](https://item.taobao.com/item.htm?spm=a1z10.3-c-s.w4002-23579470099.9.7787566ddFhogE&id=652090352252) |
