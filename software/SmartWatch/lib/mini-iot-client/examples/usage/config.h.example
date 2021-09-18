@@ -1,9 +1,0 @@
-#ifndef CONFIG_H
-#define CONFIG_H
-
-#define WIFI_SSID "<YOUR-SSID>"
-#define WIFI_PASS "<YOUR-PASS>"
-#define HOSTNAME "your-device-01"
-#define MINI_IOT_SERVER "<your-mini-iot-host>"
-
-#endif
