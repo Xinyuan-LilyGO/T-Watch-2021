@@ -4,6 +4,9 @@
 ![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/1.jpg)
 
 
+
+
+
 ## 快速开始:
 1. 安装[VSCODE](https://code.visualstudio.com/)和[Python](https://www.python.org/)
 2. 在VSCODE扩展中搜索PlatformIO插件并安装。
@@ -22,3 +25,36 @@
 |  Product  |                                                            Product  Link                                                            |
 | :-------: | :---------------------------------------------------------------------------------------------------------------------------------: |
 | T-Watch-2021 | [Taobao](https://item.taobao.com/item.htm?spm=a1z10.3-c-s.w4002-23579470099.9.7787566ddFhogE&id=652090352252) |
+
+
+
+## Library 
+
+1. Copy the `TWatch_2021_Library` folder to the `D:\Users\Your account\Documents\Arduino\libraries `directory.
+2. Select in Arduino -> Tools
+- board -> ESP32 Dev Module 
+- Arduino Runs on -> Core 1
+- port -> Need to check the corresponding port in the task management area, remember to install the driver
+- Flash Mode -> QIO
+- Flash Size -> 8MB
+- PSRAM -> Enable 
+
+Other options are default or can be customized
+
+3. File -> Examples -> `TWatch_2021_Library` -> basicUnit
+
+4. The configuration file macro definition of this library is mainly in the `TWatch_config.h` and `TWatch2021_V1.h` files in the library.
+
+5. Most of the examples are only used as hardware function demonstrations. This library only completes some initialization work and some demonstrations. For more advanced gameplay, please see `TWatch_hal.h`, to understand how to initialize, after being familiar with it, you can completely leave this library for more advanced gameplay
+
+## To do
+1. Need to port V8 version of LVGL GUI support.
+2. Add more sample programs.
+3. Add WIFI and BLE fast interface.
+
+
+
+### Update log
+
+2021.10.19 
+- Add V0.0.1 version library
