@@ -3,8 +3,10 @@
 ## Pinout
 ![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/1.jpg)
 
+![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/T-WATCH2021-V1.2.jpg)
 
-
+## Version update log
+- Added V1.2 version, mainly adding RTC alarm clock interrupt, focusing all interrupts on the IO32 pin.date : 2021-12-15
 
 
 ## 快速开始:
