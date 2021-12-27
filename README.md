@@ -1,16 +1,15 @@
 <h1 align = "center">🌟 T-Watch-2021🌟</h1>
 
 ## Pinout
-![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/1.jpg)
+![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/T-WATCH2021-V1.0-en.jpg)
+
+![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/T-WATCH2021-V1.1-en.jpg)
 
 ![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/image5.jpg)
 
-![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/T-WATCH2021-V1.2.jpg)
-
-![image](https://github.com/Xinyuan-LilyGO/T-Watch-2021/blob/main/image/image4.jpg)
 
 ## Version update log
-- Added V1.2 version, mainly adding RTC alarm clock interrupt, focusing all interrupts on the IO32 pin.date : 2021-12-15
+- Added V1.1 version, mainly adding RTC alarm clock interrupt, focusing all interrupts on the IO32 pin.date : 2021-12-15
 
 
 ## 快速开始:
@@ -54,13 +53,20 @@ Other options are default or can be customized
 5. Most of the examples are only used as hardware function demonstrations. This library only completes some initialization work and some demonstrations. For more advanced gameplay, please see `TWatch_hal.h`, to understand how to initialize, after being familiar with it, you can completely leave this library for more advanced gameplay
 
 ## To do
-1. Need to port V8 version of LVGL GUI support.
+1. ~~Need to port V8 version of LVGL GUI support.~~
 2. Add more sample programs.
 3. Add WIFI and BLE fast interface.
 
 
 
 ### Update log
+
+2021.12.27
+
+- Released the V1.1 version of the watch motherboard, mainly adding alarm interrupts, adjusting the position of the screen cable and vibration current limit, and optimizing the overall sleep power consumption
+- Fix motion interruption correction, add raise hand, single click, double click interrupt..
+- Add LVGL support
+- Add V0.0.2 version library
 
 2021.10.19 
 - Add V0.0.1 version library
