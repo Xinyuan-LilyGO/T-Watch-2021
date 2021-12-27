@@ -22,6 +22,12 @@
 #define FwVersion 0XA9
 
 #define MotionMask 0XEC
+//      Bit
+#define EnConLR _BV(2)	// Can continuously slide left and right
+#define EnConUD _BV(1)	// Enable continuous sliding up and down
+#define EnDClick _BV(0) // Enable double-click action
+//
+
 #define IrqPluseWidth 0XED
 #define NorScanPer 0XEE
 #define MotionSlAngle 0XEF
@@ -35,46 +41,61 @@
 #define LpScanFreq 0XF7
 #define LpScanIdac 0XF8
 #define AutoSleepTime 0XF9
+
 #define IrqCtl 0XFA
+//      Bit
+#define EnTest _BV(7)	// Interrupt the pin test, and automatically send out low pulse periodically after being enabled.
+#define EnTouch _BV(6)	// When a touch is detected, periodically send out low pulses
+#define EnChange _BV(5) // When a touch state change is detected, a low pulse is sent.
+#define EnMotion _BV(4) // When a gesture is detected, a low pulse is emitted.
+#define OnceWLP _BV(0)	// The long press gesture only sends out a low pulse signal.
+//
+
 #define AutoReset 0XFB
 #define LongPressTime 0XFC
 #define IOCtl 0XFD
 #define DisAutoSleep 0XFE
 
-enum
-{
-	No_Gesture = 0x00,
-	Slide_Up,
-	Slide_Down,
-	Slide_Left,
-	Slide_Right,
-	Click_On,
-	Double_Click,
-	Press
-}; //GestureID
+#define _BV(b) (1UL << (b))
 
-class CST816S
+class CST816S_Class
 {
+	enum
+	{
+		No_Gesture = 0x00,
+		Slide_Up,
+		Slide_Down,
+		Slide_Left,
+		Slide_Right,
+		Click_On,
+		Double_Click,
+		Press
+	}; // GestureID
 public:
-	bool begin(TwoWire &port, uint8_t res, uint8_t INT, uint8_t addr = CTP_SLAVER_ADDR);
+	bool begin(TwoWire &port, uint8_t res, uint8_t _int = -1, uint8_t addr = CTP_SLAVER_ADDR);
 	void setReset();
 	void setADDR(uint8_t b);
-	void cst816s_deep_sleep(void);
-	void _writeReg(uint8_t reg, uint8_t *data, uint8_t len);
-	uint8_t _readReg(uint8_t reg, uint8_t *data, uint8_t len);
-	bool ReadTouch(void);
-	void TouchInt(void);
-	uint8_t CheckID(void);
-	uint8_t getTouchType(void);
+	bool read(void);
 	uint16_t getX(void);
 	uint16_t getY(void);
 
+	void TouchInt(void);
+
+	uint8_t CheckID(void);
+	uint8_t getTouchType(void);
+	void setAutoLowPower(bool en = false);
+	void setTouchInt(bool en = false);
+	void setGesture(bool en = false);
+	void setGestureCalibration(uint8_t data);
 private:
+	void _writeReg(uint8_t reg, uint8_t data);
+	void _writeReg(uint8_t reg, uint8_t *data, uint8_t len);
+	uint8_t _readReg(uint8_t reg, uint8_t *data, uint8_t len);
 	uint8_t _address;
 	bool _init = false;
 	TwoWire *_i2cPort;
 	uint8_t _res = -1;
-	uint8_t _INT = -1;
+	uint8_t _int = -1;
 	uint8_t Touch_Data[10];
 };
 

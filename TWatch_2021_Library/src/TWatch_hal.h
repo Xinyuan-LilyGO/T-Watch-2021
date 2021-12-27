@@ -8,6 +8,8 @@
 #include <Wire.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/timers.h"
+#include "freertos/queue.h"
 #include "libraries/TFT_eSPI/TFT_eSPI.h"
 #include "libraries/OneButton/src/OneButton.h"
 #include "libraries/Cst816s/CST816S.h"
@@ -26,27 +28,97 @@
 #include "libraries/lvgl/lvgl.h"
 #include "drive/Lvgl_Driver/Input.h"
 #include "Config/TWatch_config.h"
+#include "soc/soc_ulp.h"
 
-typedef enum
-{
-    Click = 0,
-    DoubleClick,
-    LongPressStart,
-    LongPressStop,
-    DuringLongPress
-};
+#if (TWatch_DEBUG) == 1
+
+#define DEBUG(x) Serial.print(x);
+#define DEBUGLN(x) Serial.println(x);
+#define DEBUGF(fmt, ...) Serial.printf(fmt, ##__VA_ARGS__);
+#else
+#define DEBUG(x) ;
+#define DEBUGLN(x) ;
+#define DEBUGF(x) ;
+
+#endif
+
+#define EVENT_IRQ_BIT (_BV(1))
+
+#define TOUCH_IRQ_BIT (_BV(2))
+#define ALARM_IRQ_BIT (_BV(3))
+#define SPORTS_IRQ_BIT (_BV(4))
+
+typedef TFT_eSPI SCREEN_CLASS;
+typedef void (*irq_Fun_cb_t)(void *user_data_ptr);
 
 class TWatchClass
 {
+    struct irq_bma_Fun_cb_t
+    {
+        irq_Fun_cb_t single_tap_cb;
+        irq_Fun_cb_t double_tap_cb;
+        irq_Fun_cb_t wrist_wear_cb;
+        irq_Fun_cb_t step_cntr_cb;
+        irq_Fun_cb_t activity_cb;
+        irq_Fun_cb_t any_mot_cb;
+        irq_Fun_cb_t no_mot_cb;
+    };
+    enum
+    {
+        Click = 0,
+        DoubleClick,
+        LongPressStart,
+        LongPressStop,
+        DuringLongPress
+    };
 
+private:
 public:
-    TWatchClass() { HAL_Init(); };
+    TWatchClass()
+    {
+        HAL_Init();
+#if defined(TWatch_HAL_AIO_INT)
+        pinMode(TWATCH_AIO_INT, INPUT);
+        attachInterrupt(TWATCH_AIO_INT, _IRQ_AIO_event, FALLING);
+#else
+        pinMode(TWATCH_TOUCH_INT, INPUT_PULLUP);
+        pinMode(TWATCH_BMA_INT_2, INPUT);
+#endif
+    };
+
     ~TWatchClass();
+
+    static TWatchClass *getWatch()
+    {
+        if (_ttgo == nullptr)
+        {
+            _ttgo = new TWatchClass();
+            _Hal_IRQ_event = xEventGroupCreate();
+        }
+        return _ttgo;
+    }
+
+    static TWatchClass *_ttgo;
+    static EventGroupHandle_t _Hal_IRQ_event;
 
     void HAL_Init();
     void HAL_Update();
-    void HAL_Sleep();
+    void HAL_Sleep(bool deep);
+    void HAL_AIO_IRQ_cb();
 
+    static void _IRQ_AIO_event(void)
+    {
+        portBASE_TYPE task_woken, xResult;
+        DEBUGLN("get irq");
+        if (_ttgo->_Hal_IRQ_event)
+        {
+            xResult = xEventGroupSetBitsFromISR(_ttgo->_Hal_IRQ_event, EVENT_IRQ_BIT, &task_woken);
+            if (xResult == pdTRUE)
+            {
+                portYIELD_FROM_ISR();
+            }
+        }
+    }
 #if defined(TWatch_HAL_Power)
     /* Power */
     void Power_Init();
@@ -89,8 +161,9 @@ public:
     /* Backlight */
     void Backlight_Init();
     void Backlight_SetValue(int16_t val);
-    uint16_t Backlight_GetValue();
-    //void Backlight_GradualLight();
+    int16_t Backlight_GetValue();
+    void Backlight_GradualLight(int16_t val, uint32_t ms);
+    void Backlight_Updata(uint32_t millis, uint32_t time_ms);
 #endif
 
 #if defined(TWatch_HAL_BOTTON)
@@ -104,13 +177,17 @@ public:
     /* Acceleration Sensor : bma423 */
     void AccSensor_Init();
     void AccSensor_Interface_Init();
-    void AccSensor_StepEnable(bool Enable, bool Reset);
-    void AccSensor_Sleep(bool Acc, bool Step);
+    void AccSensor_Step_Reset();
+    void AccSensor_Feature(uint8_t feature, bool Enable);
+    void AccSensor_Feature_Int(uint8_t feature, bool Enable);
+    void AccSensor_Acc_Feature(bool Enable);
+    void AccSensor_Reset(void);
     void AccSensor_Updata(uint32_t millis, uint32_t time_ms);
     float AccSensor_GetX();
     float AccSensor_GetY();
     float AccSensor_GetZ();
     uint32_t AccSensor_GetStep();
+    float AccSensor_GetTemperature(uint8_t temp_unit);
 #endif
 
 #if defined(TWatch_HAL_QMC5883L)
@@ -133,14 +210,22 @@ public:
     void Time_Updata(uint32_t millis, uint32_t time_ms);
     PCF8563_Class *GetRTC_Class();
     RTC_Date GetRTCTime();
+
+#if defined(USE_RTC_ALARM)
+    void SetAlarmTime(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday);
+#endif
+
 #endif
 
 #if defined(TWatch_HAL_Touch)
     /* Touch */
     void Touch_Init();
-    bool Touch_Updata();
+    bool Touch_Check();
+    void Touch_Interrupt(bool enable = false);
     uint16_t Touch_GetX();
     uint16_t Touch_GetY();
+    void Touch_Updata(uint32_t millis, uint32_t time_ms);
+
 #endif
 
 #if defined(TWatch_HAL_BME280)
@@ -180,6 +265,11 @@ public:
 #endif
 
 private:
+#if defined(TWatch_HAL_AIO_INT)
+    irq_Fun_cb_t _alarm_irq_cb = nullptr;
+    struct irq_bma_Fun_cb_t _bma_irq_cb = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+#endif
+
 #if defined(TWatch_HAL_Power)
     /* Power */
     uint8_t Pow_percent;
@@ -194,11 +284,17 @@ private:
 #if defined(TWatch_HAL_Display)
     /* Display */
     TFT_eSPI *tft = nullptr;
+
+    /* Backlight */
+    bool _adjust = false;
+    uint32_t _endtime;
+    int16_t _old_Backlight;
+    float _k;
 #endif
 
 #if defined(TWatch_HAL_Touch)
     /* Touch */
-    CST816S *Touch = nullptr;
+    CST816S_Class *Touch = nullptr;
 #endif
 
 #if defined(TWatch_HAL_BOTTON)
@@ -213,7 +309,9 @@ private:
     float AccX, AccY, AccZ;
     uint32_t stepCount;
     bma4_dev *bma423 = nullptr;
+
 #endif
+
 #if defined(TWatch_HAL_PCF8563)
     /* RTC : pcf8563 */
     PCF8563_Class *Rtc = nullptr;
@@ -224,6 +322,17 @@ private:
     QMC5883LCompass *MAG = nullptr;
     int Azimuth;
     int magX, magY, magZ;
+#endif
+
+#if (TWatch_APP_LVGL == 1)
+    lv_color_t *lv_disp_buf_p;
+
+    static void touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
+    static void disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p);
+
+    void lv_port_disp_init(SCREEN_CLASS *scr);
+    void lv_port_indev_init(void);
+
 #endif
 };
 

@@ -8,7 +8,7 @@ void TWatchClass::Backlight_Init()
     ledcAttachPin(TWATCH_TFT_BL, 0);
     ledcWrite(0, 0);
 }
-
+/* param:@in :0-100 */
 void TWatchClass::Backlight_SetValue(int16_t val)
 {
     if (val < 100)
@@ -17,31 +17,40 @@ void TWatchClass::Backlight_SetValue(int16_t val)
         ledcWrite(0, 0xFF);
 }
 
-uint16_t TWatchClass::Backlight_GetValue()
+int16_t TWatchClass::Backlight_GetValue()
 {
     return (ledcRead(0) * 100) / 256;
 }
 
-/* void TWatchClass::Backlight_GradualLight()
+void TWatchClass::Backlight_GradualLight(int16_t val, uint32_t ms)
 {
-    static bool state;
-    Serial.println("Gradually");
-    if (state)
+    int32_t temp1;
+    _old_Backlight = Backlight_GetValue();
+    temp1 = (val - _old_Backlight);
+    _endtime = millis() + ms;
+    _k = (float)((temp1 * 1.0) / ms);
+    DEBUGF("Backlight_Gradually Val:%d,ms:%d,k:%f\n", val, ms, _k);
+    _adjust = true;
+}
+
+void TWatchClass::Backlight_Updata(uint32_t millis, uint32_t time_ms)
+{
+    static uint32_t Millis;
+    static uint8_t count;
+    if (_adjust)
     {
-        for (uint8_t i = 0; i < 100; i++)
+        if (millis - Millis > time_ms)
         {
-            delay(3);
-            Backlight_SetValue(i);
+            count++;
+            Backlight_SetValue((uint16_t)((_k * count) + _old_Backlight));
+            if (Millis > _endtime)
+            {
+                _adjust = false;
+                count = 0;
+            }
+            Millis = millis;
         }
     }
-    else
-    {
-        for (uint8_t i = 100; i > 0; i--)
-        {
-            delay(3);
-            Backlight_SetValue(i);
-        }
-    }
-    state = !state;
-} */
+}
+
 #endif
