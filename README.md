@@ -13,19 +13,29 @@
 
 
 ## 快速开始:
+### 项目构建方法:
 1. 安装[VSCODE](https://code.visualstudio.com/)和[Python](https://www.python.org/)
 2. 在VSCODE扩展中搜索PlatformIO插件并安装。
 3. 安装完成，重新加载后，左下角会多一个小房子图标，点击后即可显示Platformio IDE主页
 4. 点击文件->打开文件夹->选择software文件夹，点击左下角(√)符号进行编译 (→)代表上传.
 
+### 例程使用方法：
+1. 安装Arduino软件,将TWatch_2021_Library复制到` \Documents\Arduino\libraries`中。
+2. 打开例程文件，board选择ESP32 Dev Module，Flash为8MB，PSRAM为2MB`(Arduino可支持PSRAM，platfromIO暂不支持)`，选择对应端口。
+3. 编译构建->上传
 -------------------------------------------------
 
 ## Quick start:
-
+### Project build method:
 1. Install[VSCODE](https://code.visualstudio.com/)and[Python](https://www.python.org/)
 2. Search for the PlatformIO plug-in in the VSCODE extension and install it.
 3. After the installation is complete and the reload is completed, there will be a small house icon in the lower left corner. Click to display the Platformio IDE home page
 4. Go to file - > Open folder - > Select the software folder and click the (√) symbol in the lower left corner to compile (→) for upload.
+
+### Routine usage:
+1. Install Arduino software and copy TWatch_2021_Library to ` \Documents\Arduino\libraries`.
+2. Open the routine file, select ESP32 Dev Module for the board, 8MB for Flash, and 2MB for PSRAM (Arduino can support PSRAM, but platfromIO does not currently support), and select the corresponding port.
+3. Compile and build -> upload
 
 |  Product  |                                                            Product  Link                                                            |
 | :-------: | :---------------------------------------------------------------------------------------------------------------------------------: |
@@ -56,10 +66,14 @@ Other options are default or can be customized
 1. ~~Need to port V8 version of LVGL GUI support.~~
 2. Add more sample programs.
 3. Add WIFI and BLE fast interface.
-
+4. Add ffat support.
 
 
 ### Update log
+
+2022.1.11
+
+- Added how to use ARDUINO in README.
 
 2021.12.27
 
