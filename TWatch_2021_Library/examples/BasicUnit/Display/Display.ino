@@ -5,7 +5,9 @@ TWatchClass *twatch = nullptr;
 
 void setup()
 {
-    twatch = new TWatchClass;
+    twatch = TWatchClass::getWatch();
+    twatch->HAL_Init();
+
     Serial.begin(115200);
     twatch->Power_Init();
     twatch->Motor_Shake(2, 50);
@@ -25,5 +27,4 @@ void loop()
 {
     // put your main code here, to run repeatedly:
     twatch->HAL_Update();
-
 }

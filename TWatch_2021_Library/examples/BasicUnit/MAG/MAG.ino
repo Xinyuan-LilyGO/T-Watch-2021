@@ -5,10 +5,12 @@ TWatchClass *twatch = nullptr;
 
 void setup()
 {
-    twatch = new TWatchClass;
+    twatch = TWatchClass::getWatch();
+    twatch->HAL_Init();
+    
     Serial.begin(115200);
     twatch->Power_Init();
-    
+
     Serial.println("MAG Demo");
 }
 

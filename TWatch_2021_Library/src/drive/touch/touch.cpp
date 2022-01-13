@@ -5,7 +5,7 @@
 void TWatchClass::Touch_Init()
 {
     Touch = new CST816S_Class;
-    Wire.begin(TWATCH_IICSDA, TWATCH_IICSCL, 200000);
+    Wire.begin(TWATCH_IICSDA, TWATCH_IICSCL);
     Touch->begin(Wire, TWATCH_TOUCH_RES, TWATCH_TOUCH_INT);
     Touch->setTouchInt(false);
 }

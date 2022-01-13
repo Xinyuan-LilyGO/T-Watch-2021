@@ -1,8 +1,11 @@
 #include "../TWatch_hal.h"
-#include "Lvgl_Driver/Input.h"
 
 TWatchClass *TWatchClass::_ttgo = nullptr;
 EventGroupHandle_t TWatchClass::_Hal_IRQ_event = nullptr;
+
+#if defined(TWatch_HAL_BOTTON)
+EventGroupHandle_t TWatchClass::_hal_botton_event = nullptr;
+#endif
 
 #if defined(TWatch_HAL_Display) && (TWatch_APP_LVGL == 1)
 void lv_inc_loop(uint32_t millis, uint32_t time_ms)
@@ -20,14 +23,13 @@ void lv_spi_post_cb(spi_transaction_t *trans);
 
 void TWatchClass::HAL_Init(void)
 {
-/*
 #if defined(TWatch_HAL_Display) && (TWatch_APP_LVGL == 1)
     // Move the malloc process to Init() to make sure that the largest heap can be used for this buffer.
     lv_disp_buf_p = static_cast<lv_color_t *>(malloc(DISP_BUF_SIZE * sizeof(lv_color_t)));
     if (lv_disp_buf_p == nullptr)
         LV_LOG_WARN("lv_port_disp_init malloc failed!\n");
 #endif
- */
+
 #if defined(TWatch_HAL_Display)
     Backlight_Init();
     Display_Init();
@@ -41,15 +43,24 @@ void TWatchClass::HAL_Init(void)
     Encoder_Init();
 #endif
 
+#if defined(TWatch_HAL_BOTTON)
+    Botton_Init();
+#endif
+
+#if defined(TWatch_HAS_FFAT)
+    FFat_Init();
+#endif
+
 #if defined(TWatch_HAL_Display) && (TWatch_APP_LVGL == 1)
     lv_init();
     lv_port_disp_init(Get_TFT());
     lv_port_indev_init();
+    lv_ffat_fs_if_init();
 #endif
 
 #if defined(TWatch_HAS_SD)
     SD_Init();
-    lv_fs_if_init();
+
 #endif
 
 #if defined(TWatch_HAL_QMC5883L)
@@ -58,9 +69,7 @@ void TWatchClass::HAL_Init(void)
 #if defined(TWatch_HAL_PCF8563)
     RTC_Init();
 #endif
-#if defined(TWatch_HAL_BOTTON)
-    Botton_Init();
-#endif
+
 #if defined(TWatch_HAL_MOTOR)
     Motor_Init();
 #endif
@@ -94,10 +103,11 @@ void Debugloop(uint32_t millis, uint32_t time_ms)
     static uint32_t Millis;
     if (millis - Millis > time_ms)
     {
-        log_d("Total heap: %d", ESP.getHeapSize());
-        log_d("Free heap: %d", ESP.getFreeHeap());
-        log_d("Total PSRAM: %d", ESP.getPsramSize());
-        log_d("Free PSRAM: %d", ESP.getFreePsram());
+        // DEBUGF("Total heap: %d\n", ESP.getHeapSize());
+        // DEBUGF("Free heap: %d\n", ESP.getFreeHeap());
+        // DEBUGF("Max Alloc Heap: %d\n", ESP.getMaxAllocHeap());
+        // DEBUGF("Total PSRAM: %d\n", ESP.getPsramSize());
+        // DEBUGF("Free PSRAM: %d\n", ESP.getFreePsram());
         Millis = millis;
     }
 }

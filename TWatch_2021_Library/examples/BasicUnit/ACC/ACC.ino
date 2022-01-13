@@ -5,12 +5,14 @@ TWatchClass *twatch = nullptr;
 
 void setup()
 {
-    twatch = new TWatchClass;
+    twatch = TWatchClass::getWatch();
+    twatch->HAL_Init();
+
     Serial.begin(115200);
     twatch->Power_Init();
 
     Serial.println("Acc Demo");
-    twatch->AccSensor_StepEnable(true, true);
+    // twatch->AccSensor_StepEnable(true, true);
     Serial.println("   X   |   Y   |   Z   |   step");
 }
 

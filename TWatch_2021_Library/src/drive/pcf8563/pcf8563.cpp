@@ -6,12 +6,14 @@ void TWatchClass::RTC_Init()
 {
     Rtc = new PCF8563_Class;
     Wire.begin(TWATCH_IICSDA, TWATCH_IICSCL);
-    Rtc->begin();
+    Rtc->begin(Wire);
     Rtc->setDateTime(2021, 12, 21, 18, 04, 50);
     Rtc->setAlarm(99, 05, 99, 99);
     Rtc->setAlarmByMinutes(5);
     Rtc->getAlarm();
+#if (USE_RTC_ALARM == 1)
     Rtc->enableAlarm();
+#endif
 }
 
 void TWatchClass::GetRTCTime(uint8_t *hour, uint8_t *minute, uint8_t *second)

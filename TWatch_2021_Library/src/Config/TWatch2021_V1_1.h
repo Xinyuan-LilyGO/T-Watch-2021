@@ -14,8 +14,8 @@ log:
 #define TWATCH_BAT_ADC 36
 
 #define TWATCH_BTN_1 0
-#define TWATCH_BTN_2 34
-#define TWATCH_BTN_3 35
+#define TWATCH_BTN_2 35
+#define TWATCH_BTN_3 34
 
 #define TWATCH_MOTOR 4
 

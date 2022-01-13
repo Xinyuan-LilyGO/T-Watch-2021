@@ -1,6 +1,8 @@
-#include "Input.h"
+#include "../../TWatch_hal.h"
 
-#if defined(TWatch_HAS_SD) && (TWatch_APP_LVGL == 1)
+#if (TWatch_APP_LVGL == 1)
+
+#if defined(TWatch_HAS_SD)
 #include "SdFat.h"
 /*********************
  *      DEFINES
@@ -324,4 +326,6 @@ static lv_fs_res_t fs_dir_close(lv_fs_drv_t *drv, void *dir_p)
 
     return res;
 }
+#endif
+
 #endif

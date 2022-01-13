@@ -1,11 +1,15 @@
 #ifndef __TWatch_HAL_H__
 #define __TWatch_HAL_H__
 
-//#include <Config/Config.h>
 #include <stdio.h>
+#include <errno.h>
+#include <dirent.h>
+#include <unistd.h>
 #include <Arduino.h>
 #include "SPI.h"
 #include <Wire.h>
+#include "FS.h"
+#include "FFat.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/timers.h"
@@ -20,15 +24,14 @@
 #include "libraries/Adafruit_Sensor/Adafruit_Sensor.h"
 #include "libraries/PCF8563_Library/src/pcf8563.h"
 #include "libraries/BMA423-Sensor-API/bma423.h"
+#include "libraries/lvgl/lvgl.h"
+#include "Config/TWatch_config.h"
+#include "soc/soc_ulp.h"
 //#include "libraries/SdFat/src/SdFat.h"
 /* #include "WiFi.h"
 #include "libraries/BluetoothSerial/src/BluetoothSerial.h"
 #include "HTTPClient.h" */
 /* #include <ArduinoJson.h> */
-#include "libraries/lvgl/lvgl.h"
-#include "drive/Lvgl_Driver/Input.h"
-#include "Config/TWatch_config.h"
-#include "soc/soc_ulp.h"
 
 #if (TWatch_DEBUG) == 1
 
@@ -48,6 +51,16 @@
 #define ALARM_IRQ_BIT (_BV(3))
 #define SPORTS_IRQ_BIT (_BV(4))
 
+#define EVENT_CLICK_BIT(x) (_BV(0) << x)
+#define EVENT_DOUBLE_CLICK_BIT(x) (_BV(4) << x)
+#define EVENT_DURING_LONG_PRESS_BIT(x) (_BV(8) << x)
+
+#define COLOR_NONE "\033[0m"
+#define FONT_COLOR_RED "\033[0;31m"
+#define FONT_COLOR_BLUE "\033[1;34m"
+#define BACKGROUND_COLOR_RED "\033[41m"
+#define BG_RED_FONT_YELLOW "\033[41;33m"
+
 typedef TFT_eSPI SCREEN_CLASS;
 typedef void (*irq_Fun_cb_t)(void *user_data_ptr);
 
@@ -63,6 +76,9 @@ class TWatchClass
         irq_Fun_cb_t any_mot_cb;
         irq_Fun_cb_t no_mot_cb;
     };
+
+private:
+public:
     enum
     {
         Click = 0,
@@ -71,9 +87,6 @@ class TWatchClass
         LongPressStop,
         DuringLongPress
     };
-
-private:
-public:
     TWatchClass()
     {
         HAL_Init();
@@ -94,12 +107,18 @@ public:
         {
             _ttgo = new TWatchClass();
             _Hal_IRQ_event = xEventGroupCreate();
+#if defined(TWatch_HAL_BOTTON)
+            _hal_botton_event = xEventGroupCreate();
+#endif
         }
         return _ttgo;
     }
 
     static TWatchClass *_ttgo;
     static EventGroupHandle_t _Hal_IRQ_event;
+#if defined(TWatch_HAL_BOTTON)
+    static EventGroupHandle_t _hal_botton_event;
+#endif
 
     void HAL_Init();
     void HAL_Update();
@@ -171,6 +190,7 @@ public:
     void Botton_Init();
     void Botton_Updata(uint32_t millis, uint32_t time_ms);
     void Botton_BindEvent(uint8_t Btn, uint8_t Event, callbackFunction Function);
+    void Botton_BindEvent(uint8_t Btn, uint8_t Event, parameterizedCallbackFunction Function, void *parameter);
 #endif
 
 #if defined(TWatch_HAL_BMA423)
@@ -186,6 +206,7 @@ public:
     float AccSensor_GetX();
     float AccSensor_GetY();
     float AccSensor_GetZ();
+    void AccSensor_Set_Feature_CB(uint8_t feature, irq_Fun_cb_t cb);
     uint32_t AccSensor_GetStep();
     float AccSensor_GetTemperature(uint8_t temp_unit);
 #endif
@@ -210,7 +231,8 @@ public:
     void Time_Updata(uint32_t millis, uint32_t time_ms);
     PCF8563_Class *GetRTC_Class();
     RTC_Date GetRTCTime();
-
+    RTC_Date LocalTime;
+    
 #if defined(USE_RTC_ALARM)
     void SetAlarmTime(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday);
 #endif
@@ -264,6 +286,13 @@ public:
     void SD_SetEventCallback(SD_CallbackFunction_t callback);
 #endif
 
+#if defined(TWatch_HAS_FFAT)
+    /* FFAT */
+    bool FFat_Init();
+    bool is_FFat_Mounted();
+    bool FFat_format(bool mount);
+#endif
+
 private:
 #if defined(TWatch_HAL_AIO_INT)
     irq_Fun_cb_t _alarm_irq_cb = nullptr;
@@ -302,6 +331,7 @@ private:
     OneButton *buttonLock = nullptr;
     OneButton *buttonMenu = nullptr;
     OneButton *buttonFastSet = nullptr;
+
 #endif
 
 #if defined(TWatch_HAL_BMA423)
@@ -315,7 +345,7 @@ private:
 #if defined(TWatch_HAL_PCF8563)
     /* RTC : pcf8563 */
     PCF8563_Class *Rtc = nullptr;
-    RTC_Date LocalTime;
+
 #endif
 #if defined(TWatch_HAL_QMC5883L)
     /* MAG Sensor : qmc5883l*/
@@ -324,15 +354,23 @@ private:
     int magX, magY, magZ;
 #endif
 
+#if defined(TWatch_HAS_FFAT)
+    bool _is_ffat_mounted = false;
+
+#endif
+
 #if (TWatch_APP_LVGL == 1)
-    lv_color_t *lv_disp_buf_p;
+    lv_color_t *lv_disp_buf_p = nullptr;
 
     static void touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
     static void disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p);
+    static void botton_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
+    static void wrist_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data);
 
     void lv_port_disp_init(SCREEN_CLASS *scr);
     void lv_port_indev_init(void);
-
+    void lv_ffat_fs_if_init(void);
+    // void display_send_DMA_done_cb(spi_transaction_t *trans);
 #endif
 };
 

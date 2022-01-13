@@ -263,5 +263,45 @@ float TWatchClass::AccSensor_GetTemperature(uint8_t temp_unit)
     actual_temp = (float)get_temp / (float)BMA4_SCALE_TEMP;
     return actual_temp;
 }
+/*
+ * Feature
+ *  BMA423_SINGLE_TAP_INT
+ *  BMA423_STEP_CNTR_INT
+ *  BMA423_WRIST_WEAR_INT
+ *  BMA423_DOUBLE_TAP_INT
+ *  BMA423_ACTIVITY_INT
+ *  BMA423_ANY_MOT_INT
+ *  BMA423_NO_MOT_INT
+ *  BMA423_ERROR_INT
+ */
+void TWatchClass::AccSensor_Set_Feature_CB(uint8_t feature, irq_Fun_cb_t cb)
+{
+    switch (feature)
+    {
+    case BMA423_SINGLE_TAP_INT:
+        _bma_irq_cb.single_tap_cb = cb;
+        break;
+    case BMA423_STEP_CNTR_INT:
+        _bma_irq_cb.step_cntr_cb = cb;
+        break;
+    case BMA423_WRIST_WEAR_INT:
+        _bma_irq_cb.wrist_wear_cb = cb;
+        break;
+    case BMA423_DOUBLE_TAP_INT:
+        _bma_irq_cb.double_tap_cb = cb;
+        break;
+    case BMA423_ACTIVITY_INT:
+        _bma_irq_cb.activity_cb = cb;
+        break;
+    case BMA423_ANY_MOT_INT:
+        _bma_irq_cb.any_mot_cb = cb;
+        break;
+    case BMA423_NO_MOT_INT:
+        _bma_irq_cb.no_mot_cb = cb;
+        break;
+    default:
+        break;
+    }
+}
 
 #endif

@@ -16,9 +16,6 @@ void TWatchClass::Display_Init()
     
     tft->setRotation(TFT_Rotation);
 
-#if USE_TFT_DMA == 1
-    tft->initDMA(TWATCH_TFT_CS);
-#endif
 }
 TFT_eSPI *TWatchClass::Get_TFT()
 {

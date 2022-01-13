@@ -9,7 +9,7 @@
 #error "USE TFT DMA and USE PSRAM cannot be used at the same time"
 #endif
 
-// lv_disp_drv_t *disp_drv_p;
+lv_disp_drv_t *disp_drv_p;
 
 void TWatchClass::disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
@@ -19,24 +19,43 @@ void TWatchClass::disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_colo
     screen->startWrite();
     screen->setAddrWindow(area->x1, area->y1, w, h);
 #if USE_TFT_DMA
+    disp_drv_p = disp;
     screen->pushPixelsDMA((uint16_t *)color_p, w * h);
 #else
     screen->pushColors((uint16_t *)&color_p->full, w * h);
-#endif
     screen->endWrite();
-
     lv_disp_flush_ready(disp);
+#endif
+}
+
+void display_send_DMA_done_cb(spi_transaction_t *trans)
+{
+    lv_disp_flush_ready(disp_drv_p);
+    //tft->endWrite();
+}
+
+void display_wait_cb(_lv_disp_drv_t *disp_drv)
+{
+    delay(1);
 }
 
 void TWatchClass::lv_port_disp_init(SCREEN_CLASS *scr)
 {
     static lv_disp_draw_buf_t draw_buf;
-    Serial.println("lv_port_disp_init");
+
+#if USE_TFT_DMA == 1
+    tft->initDMA(TWATCH_TFT_CS, display_send_DMA_done_cb);
+#endif
+
+    Serial.println(FONT_COLOR_RED "lv_port_disp_init" COLOR_NONE);
 #if USE_PSRAM
     lv_disp_buf_p = (lv_color_t *)ps_calloc(sizeof(lv_color_t), DISP_BUF_SIZE);
     lv_disp_draw_buf_init(&draw_buf, lv_disp_buf_p, NULL, DISP_BUF_SIZE);
 #else
-    lv_disp_buf_p = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * DISP_BUF_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    if (lv_disp_buf_p == nullptr)
+    {
+        lv_disp_buf_p = (lv_color_t *)heap_caps_malloc(sizeof(lv_color_t) * DISP_BUF_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    }
     lv_disp_draw_buf_init(&draw_buf, lv_disp_buf_p, NULL, DISP_BUF_SIZE);
 #endif
     static lv_disp_drv_t disp_drv;
@@ -45,6 +64,7 @@ void TWatchClass::lv_port_disp_init(SCREEN_CLASS *scr)
     disp_drv.ver_res = SCREEN_HEIGHT;
     disp_drv.flush_cb = disp_flush;
     disp_drv.draw_buf = &draw_buf;
+    disp_drv.wait_cb = display_wait_cb;
     disp_drv.user_data = scr;
     lv_disp_drv_register(&disp_drv);
 }

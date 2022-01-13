@@ -2,14 +2,15 @@
 
 #if defined(TWatch_HAL_BOTTON)
 
-
-
 void TWatchClass::Botton_Init()
 {
-    //buttonLock.attachClick(callback);
     buttonLock = new OneButton(TWATCH_BTN_1, true);
     buttonMenu = new OneButton(TWATCH_BTN_2, true);
     buttonFastSet = new OneButton(TWATCH_BTN_3, true);
+
+    buttonLock->setClickTicks(100);
+    buttonMenu->setClickTicks(100);
+    buttonFastSet->setClickTicks(100);
 }
 
 void TWatchClass::Botton_Updata(uint32_t millis, uint32_t time_ms)
@@ -64,8 +65,44 @@ void TWatchClass::Botton_BindEvent(uint8_t Btn, uint8_t Event, callbackFunction 
     }
 }
 
+void TWatchClass::Botton_BindEvent(uint8_t Btn, uint8_t Event, parameterizedCallbackFunction Function, void *parameter)
+{
+    OneButton *_btn;
+    switch (Btn)
+    {
+    case TWATCH_BTN_1:
+        _btn = buttonLock;
+        break;
+    case TWATCH_BTN_2:
+        _btn = buttonMenu;
+        break;
+    case TWATCH_BTN_3:
+        _btn = buttonFastSet;
+        break;
+    default:
+        break;
+    }
 
-
-
+    switch (Event)
+    {
+    case Click:
+        _btn->attachClick((parameterizedCallbackFunction)Function, parameter);
+        break;
+    case DoubleClick:
+        _btn->attachDoubleClick((parameterizedCallbackFunction)Function, parameter);
+        break;
+    case LongPressStart:
+        _btn->attachLongPressStart((parameterizedCallbackFunction)Function, parameter);
+        break;
+    case LongPressStop:
+        _btn->attachLongPressStop((parameterizedCallbackFunction)Function, parameter);
+        break;
+    case DuringLongPress:
+        _btn->attachDuringLongPress((parameterizedCallbackFunction)Function, parameter);
+        break;
+    default:
+        break;
+    }
+}
 
 #endif
