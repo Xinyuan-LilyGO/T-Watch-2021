@@ -123,8 +123,8 @@ void TWatchClass::HAL_Update(void)
     Backlight_Updata(ms, 1);
 #endif
 #if defined(TWatch_HAL_Display) && (TWatch_APP_LVGL == 1)
-    lv_inc_loop(ms, 5);
-    lv_timer_handler();
+    // lv_inc_loop(ms, 5);
+    // lv_timer_handler();
 #endif
 #if defined(TWatch_HAL_PCF8563)
     Time_Updata(ms, 1000);
