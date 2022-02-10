@@ -13,7 +13,7 @@
 #define TWatch_HAS_FFAT
 #define TWatch_HAL_MOTOR
 #define TWatch_HAL_Display
-/*       ├─ */ #define USE_TFT_DMA 1
+/*       ├─ */ #define USE_TFT_DMA 0
     /*   ├─ */ #define TFT_Rotation 0 // 0-7
     /*   ├─ */ #define SCREEN_WIDTH 240
     /*   ├─ */ #define SCREEN_HEIGHT 240
@@ -37,7 +37,7 @@
 #define TWatch_HAS_FFAT
 #define TWatch_HAL_MOTOR
 #define TWatch_HAL_Display
-/*       ├─ */ #define USE_TFT_DMA 1
+/*       ├─ */ #define USE_TFT_DMA 0
     /*   ├─ */ #define TFT_Rotation 0 // 0-7
     /*   ├─ */ #define SCREEN_WIDTH 240
     /*   ├─ */ #define SCREEN_HEIGHT 240
