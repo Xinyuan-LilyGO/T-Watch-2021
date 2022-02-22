@@ -320,25 +320,25 @@ const char *PCF8563_Class::formatDateTime(uint8_t sytle)
     switch (sytle)
     {
     case PCF_TIMEFORMAT_HM:
-        snprintf(format, sizeof(format), "%d:%d", t.hour, t.minute);
+        snprintf(format, sizeof(format), "%02d:%02d", t.hour, t.minute);
         break;
     case PCF_TIMEFORMAT_HMS:
-        snprintf(format, sizeof(format), "%d:%d:%d", t.hour, t.minute, t.second);
+        snprintf(format, sizeof(format), "%02d:%02d:%02d", t.hour, t.minute, t.second);
         break;
     case PCF_TIMEFORMAT_YYYY_MM_DD:
-        snprintf(format, sizeof(format), "%d-%d-%d", t.year, t.month, t.day);
+        snprintf(format, sizeof(format), "%04d-%02d-%02d", t.year, t.month, t.day);
         break;
     case PCF_TIMEFORMAT_MM_DD_YYYY:
-        snprintf(format, sizeof(format), "%d-%d-%d", t.month, t.day, t.year);
+        snprintf(format, sizeof(format), "%02d-%02d-%04d", t.month, t.day, t.year);
         break;
     case PCF_TIMEFORMAT_DD_MM_YYYY:
-        snprintf(format, sizeof(format), "%d-%d-%d", t.day, t.month, t.year);
+        snprintf(format, sizeof(format), "%02d-%02d-%04d", t.day, t.month, t.year);
         break;
     case PCF_TIMEFORMAT_YYYY_MM_DD_H_M_S:
-        snprintf(format, sizeof(format), "%d-%d-%d/%d:%d:%d", t.year, t.month, t.day, t.hour, t.minute, t.second);
+        snprintf(format, sizeof(format), "%04d-%02d-%02d/%02d:%02d:%02d", t.year, t.month, t.day, t.hour, t.minute, t.second);
         break;
     default:
-        snprintf(format, sizeof(format), "%d:%d", t.hour, t.minute);
+        snprintf(format, sizeof(format), "%02d:%02d", t.hour, t.minute);
         break;
     }
     return format;

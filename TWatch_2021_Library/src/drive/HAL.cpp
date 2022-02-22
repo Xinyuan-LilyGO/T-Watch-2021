@@ -1,4 +1,4 @@
-#include "../TWatch_hal.h"
+#include "./TWatch_hal.h"
 
 TWatchClass *TWatchClass::_ttgo = nullptr;
 EventGroupHandle_t TWatchClass::_Hal_IRQ_event = nullptr;
@@ -7,29 +7,16 @@ EventGroupHandle_t TWatchClass::_Hal_IRQ_event = nullptr;
 EventGroupHandle_t TWatchClass::_hal_botton_event = nullptr;
 #endif
 
-#if defined(TWatch_HAL_Display) && (TWatch_APP_LVGL == 1)
-void lv_inc_loop(uint32_t millis, uint32_t time_ms)
-{
-    static uint32_t Millis;
-    if (millis - Millis > time_ms)
-    {
-        lv_tick_inc(time_ms);
-        Millis = millis;
-    }
-}
-#endif
-
-void lv_spi_post_cb(spi_transaction_t *trans);
-
 void TWatchClass::HAL_Init(void)
 {
 #if defined(TWatch_HAL_Display) && (TWatch_APP_LVGL == 1)
     // Move the malloc process to Init() to make sure that the largest heap can be used for this buffer.
-    lv_disp_buf_p = static_cast<lv_color_t *>(malloc(DISP_BUF_SIZE * sizeof(lv_color_t)));
-    if (lv_disp_buf_p == nullptr)
-        LV_LOG_WARN("lv_port_disp_init malloc failed!\n");
+    // lv_disp_buf_p = static_cast<lv_color_t *>(malloc(DISP_BUF_SIZE * sizeof(lv_color_t)));
+    // if (lv_disp_buf_p == nullptr)
+    //     LV_LOG_WARN("lv_port_disp_init malloc failed!\n");
 #endif
-
+    esp_task_wdt_deinit();
+    Power_Init();
 #if defined(TWatch_HAL_Display)
     Backlight_Init();
     Display_Init();
@@ -92,12 +79,24 @@ void TWatchClass::HAL_Init(void)
     /* WIFI_Init();
     WIFI_Scan(); */
 }
-/*
-void lv_spi_post_cb(spi_transaction_t *trans)
+
+void TWatchClass::Auto_update_HAL(bool en, uint8_t core)
 {
-    lv_disp_flush_ready(disp_drv_p);
+    if (en)
+    {
+        if (HAL_Update_Handle == NULL)
+            xTaskCreatePinnedToCore(HAL_Update, "HAL_Update", 1024 * 10, NULL, 2, &HAL_Update_Handle, core);
+    }
+    else
+    {
+        if (HAL_Update_Handle != NULL)
+        {
+            vTaskDelete(HAL_Update_Handle);
+            HAL_Update_Handle = NULL;
+        }
+    }
 }
- */
+
 void Debugloop(uint32_t millis, uint32_t time_ms)
 {
     static uint32_t Millis;
@@ -112,57 +111,60 @@ void Debugloop(uint32_t millis, uint32_t time_ms)
     }
 }
 
-void TWatchClass::HAL_Update(void)
+void TWatchClass::HAL_Update(void *param)
 {
     static uint32_t ms;
-    ms = millis();
+    while (1)
+    {
+        ms = millis();
 #if defined(TWatch_HAL_Touch)
-    Touch_Updata(ms, 10);
+        _ttgo->Touch_Updata(ms, 10);
 #endif
 #if defined(TWatch_HAL_Display)
-    Backlight_Updata(ms, 1);
+        _ttgo->Backlight_Updata(ms, 1);
 #endif
 #if defined(TWatch_HAL_Display) && (TWatch_APP_LVGL == 1)
-    lv_inc_loop(ms, 5);
-    lv_timer_handler();
+        lv_timer_handler();
 #endif
 #if defined(TWatch_HAL_PCF8563)
-    Time_Updata(ms, 1000);
+        _ttgo->Time_Updata(ms, 1000);
 #endif
 #if defined(TWatch_HAL_QMC5883L)
-    MAG_Updata(ms, 100);
+        _ttgo->MAG_Updata(ms, 100);
 #endif
 #if defined(TWatch_HAL_BMA423)
-    AccSensor_Updata(ms, 100);
+        _ttgo->AccSensor_Updata(ms, 100);
 #endif
 #if defined(TWatch_HAL_BOTTON)
-    Botton_Updata(ms, 10);
+        _ttgo->Botton_Updata(ms, 10);
 #endif
 #if defined(TWatch_HAL_MOTOR)
-    Motor_Loop(ms);
+        _ttgo->Motor_Loop(ms);
 #endif
 #if defined(TWatch_HAS_GPS)
-    GPS_Parse();
+        _ttgo->GPS_Parse();
 #endif
 #if defined(TWatch_HAS_BME280)
-    TempSensor_Updata(ms, 41);
+        _ttgo->TempSensor_Updata(ms, 41);
 #endif
 #if defined(TWatch_HAL_AIO_INT)
-    HAL_AIO_IRQ_cb();
+        _ttgo->HAL_AIO_IRQ_cb();
 #endif
 #if (TWatch_DEBUG == 1)
-    Debugloop(ms, 1000);
+        Debugloop(ms, 1000);
 #endif
+        delay(5);
+    }
 }
 
 void TWatchClass::HAL_Sleep(bool deep)
 {
     uint64_t mask;
 
-    Touch_Interrupt(true);
-    AccSensor_Feature(BMA423_WRIST_WEAR | BMA423_SINGLE_TAP | BMA423_DOUBLE_TAP | BMA423_STEP_CNTR, true);
-    AccSensor_Feature_Int(BMA423_WRIST_WEAR_INT | BMA423_STEP_CNTR_INT | BMA423_SINGLE_TAP_INT | BMA423_DOUBLE_TAP_INT, true);
-    AccSensor_Acc_Feature(false);
+    // Touch_Interrupt(true);
+    // AccSensor_Feature(BMA423_WRIST_WEAR | BMA423_SINGLE_TAP | BMA423_DOUBLE_TAP | BMA423_STEP_CNTR, true);
+    // AccSensor_Feature_Int(BMA423_WRIST_WEAR_INT | BMA423_STEP_CNTR_INT | BMA423_SINGLE_TAP_INT | BMA423_DOUBLE_TAP_INT, true);
+    // AccSensor_Acc_Feature(false);
 
     // Backlight_GradualLight();
     pinMode(TWATCH_IICSCL, INPUT_PULLUP);

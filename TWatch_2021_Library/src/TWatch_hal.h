@@ -1,6 +1,8 @@
-#ifndef __TWatch_HAL_H__
-#define __TWatch_HAL_H__
+// #ifndef __TWatch_HAL_H__
+// #define __TWatch_HAL_H__
+#pragma once
 
+#include "TWatch_config.h"
 #include <stdio.h>
 #include <errno.h>
 #include <dirent.h>
@@ -14,18 +16,38 @@
 #include "freertos/task.h"
 #include "freertos/timers.h"
 #include "freertos/queue.h"
+#include "esp_task_wdt.h"
+#if defined(TWatch_HAL_Display)
 #include "libraries/TFT_eSPI/TFT_eSPI.h"
+#endif
+#if defined(TWatch_HAL_BOTTON)
 #include "libraries/OneButton/src/OneButton.h"
+#endif
+#if defined(TWatch_HAL_Touch)
 #include "libraries/Cst816s/CST816S.h"
+#endif
+#if defined(TWatch_HAL_ENCODER)
 #include "libraries/Ai_Esp32_Rotary_Encoder/src/AiEsp32RotaryEncoder.h"
+#endif
+#if defined(TWatch_HAL_QMC5883L)
 #include "libraries/QMC5883L-API/QMC5883LCompass.h"
+#endif
+#if defined(TWatch_HAL_GPS)
 #include "libraries/TinyGPSPlus/src/TinyGPS++.h"
+#endif
+#if defined(TWatch_HAL_BME280)
 #include "libraries/Adafruit_BME280_Library/Adafruit_BME280.h"
 #include "libraries/Adafruit_Sensor/Adafruit_Sensor.h"
+#endif
+#if defined(TWatch_HAL_PCF8563)
 #include "libraries/PCF8563_Library/src/pcf8563.h"
+#endif
+#if defined(TWatch_HAL_BMA423)
 #include "libraries/BMA423-Sensor-API/bma423.h"
+#endif
+#if (TWatch_APP_LVGL == 1)
 #include "libraries/lvgl/lvgl.h"
-#include "Config/TWatch_config.h"
+#endif
 #include "soc/soc_ulp.h"
 //#include "libraries/SdFat/src/SdFat.h"
 /* #include "WiFi.h"
@@ -41,7 +63,7 @@
 #else
 #define DEBUG(x) ;
 #define DEBUGLN(x) ;
-#define DEBUGF(x) ;
+#define DEBUGF(fmt, ...) ;
 
 #endif
 
@@ -121,15 +143,15 @@ public:
 #endif
 
     void HAL_Init();
-    void HAL_Update();
+    static void HAL_Update(void *param);
     void HAL_Sleep(bool deep);
     void HAL_AIO_IRQ_cb();
-
+    void Auto_update_HAL(bool en, uint8_t core);
     static void _IRQ_AIO_event(void)
     {
         portBASE_TYPE task_woken, xResult;
         DEBUGLN("get irq");
-        if (_ttgo->_Hal_IRQ_event)
+        if ((xEventGroupGetBits(_ttgo->_Hal_IRQ_event) & EVENT_IRQ_BIT) != EVENT_IRQ_BIT)
         {
             xResult = xEventGroupSetBitsFromISR(_ttgo->_Hal_IRQ_event, EVENT_IRQ_BIT, &task_woken);
             if (xResult == pdTRUE)
@@ -229,10 +251,10 @@ public:
     void GetRTCDate(uint16_t *year, uint8_t *month, uint8_t *day);
     void SetRTCTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second);
     void Time_Updata(uint32_t millis, uint32_t time_ms);
-    PCF8563_Class *GetRTC_Class();
+    PCF8563_Class *GetRTC();
     RTC_Date GetRTCTime();
     RTC_Date LocalTime;
-    
+
 #if defined(USE_RTC_ALARM)
     void SetAlarmTime(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday);
 #endif
@@ -294,6 +316,7 @@ public:
 #endif
 
 private:
+    TaskHandle_t HAL_Update_Handle = NULL;
 #if defined(TWatch_HAL_AIO_INT)
     irq_Fun_cb_t _alarm_irq_cb = nullptr;
     struct irq_bma_Fun_cb_t _bma_irq_cb = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
@@ -374,4 +397,4 @@ private:
 #endif
 };
 
-#endif
+// #endif

@@ -30,6 +30,7 @@ uint8_t CST816S_Class::_readReg(uint8_t reg, uint8_t *data, uint8_t len)
 	_i2cPort->requestFrom(_address, len);
 	uint8_t index = 0;
 	while (_i2cPort->available())
+	// while (index < len)
 		data[index++] = _i2cPort->read();
 	return 0;
 }
@@ -40,10 +41,11 @@ bool CST816S_Class::begin(TwoWire &port, uint8_t res, uint8_t _int, uint8_t addr
 	_address = addr;
 	_res = res;
 	_int = _int;
-	pinMode(_int, INPUT_PULLUP);
+	if (_int != 0)
+		pinMode(_int, INPUT_PULLUP);
 	/* attachInterrupt(_INT, []{ isTouch = true },LOW); */
 	setReset();
-
+	_i2cPort->setClock(100000);
 	_i2cPort->beginTransmission(_address);
 
 	if (_i2cPort->endTransmission() != 0)
@@ -52,14 +54,14 @@ bool CST816S_Class::begin(TwoWire &port, uint8_t res, uint8_t _int, uint8_t addr
 		return false;
 	}
 
-	_writeReg(DisAutoSleep, 0x00); //默认为0，使能自动进入低功耗模式
+	_writeReg(DisAutoSleep, 0x01); //默认为0，使能自动进入低功耗模式
 
 	_writeReg(NorScanPer, 0x01); //设置报点率
 
 	//报点：0x60  手势：0X11  报点加手势：0X71
 	_writeReg(IrqCtl, 0x60);		//设置模式 报点/手势
 									//单位1S  为0时不启用功能  默认5
-	_writeReg(AutoReset, 0x05);		//设置自动复位时间  X秒内有触摸但无手势时，自动复位
+	_writeReg(AutoReset, 0x0);		//设置自动复位时间  X秒内有触摸但无手势时，自动复位
 									//单位1S  为0时不启用功能  默认10
 	_writeReg(LongPressTime, 0x10); //设置自动复位时间  长按X秒自动复位
 									//单位0.1mS
@@ -159,8 +161,7 @@ void CST816S_Class::setGesture(bool en)
 	_writeReg(MotionMask, en ? (EnConLR | EnConUD | EnDClick) : 0x00);
 }
 
-
-//Gesture detection sliding zone angle control. Angle=tan(c)*10 c is the angle based on the positive x-axis direction.
+// Gesture detection sliding zone angle control. Angle=tan(c)*10 c is the angle based on the positive x-axis direction.
 void CST816S_Class::setGestureCalibration(uint8_t data)
 {
 	_writeReg(MotionSlAngle, data);
