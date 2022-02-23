@@ -164,6 +164,7 @@ public:
     /* Power */
     void Power_Init();
     uint8_t Get_Power();
+    float Get_Power_Percent();
     void Power_Updata(uint32_t millis, uint32_t time_ms);
 #endif
 
@@ -395,6 +396,20 @@ private:
     void lv_ffat_fs_if_init(void);
     // void display_send_DMA_done_cb(spi_transaction_t *trans);
 #endif
+
+    void tw_bubble_sort(uint16_t *arr, int len)
+    {
+        int i, j;
+        uint16_t temp;
+        for (i = 0; i < len - 1; i++)
+            for (j = 0; j < len - 1 - i; j++)
+                if (arr[j] > arr[j + 1])
+                {
+                    temp = arr[j];
+                    arr[j] = arr[j + 1];
+                    arr[j + 1] = temp;
+                }
+    }
 };
 
 // #endif
