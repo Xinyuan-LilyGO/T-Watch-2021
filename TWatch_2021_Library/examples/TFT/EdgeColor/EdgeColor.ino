@@ -25,7 +25,7 @@ void setup()
 
     Serial.println("Edge color Demo (TFT_eSPI)");
 
-    twatch->Auto_update_HAL(true, 0);
+    twatch->Auto_update_HAL(true, 1);
 
     tft = twatch->Get_TFT();
     tft->setFreeFont(&FreeSans12pt7b);

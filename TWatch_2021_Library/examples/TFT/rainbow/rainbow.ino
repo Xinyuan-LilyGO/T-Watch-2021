@@ -17,7 +17,7 @@ void setup()
 
     Serial.println("Rainbow Demo (TFT_eSPI)");
 
-    twatch->Auto_update_HAL(true, 0);
+    twatch->Auto_update_HAL(true, 1);
     
 }
 uint16_t j = 0;

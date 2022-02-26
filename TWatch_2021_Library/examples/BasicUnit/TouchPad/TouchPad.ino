@@ -28,7 +28,7 @@ void setup()
 
     Serial.println("Touch Pad Demo (TFT_eSPI)");
 
-    twatch->Auto_update_HAL(true, 0);
+    twatch->Auto_update_HAL(true, 1);
 
     tft->setTextFont(2);
     tft->setTextColor(TFT_WHITE, TFT_BLACK);

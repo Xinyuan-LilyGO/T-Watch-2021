@@ -255,7 +255,7 @@ public:
     PCF8563_Class *GetRTC();
     RTC_Date GetRTCTime();
     RTC_Date LocalTime;
-
+    bool Time_isUpdated();
 #if defined(USE_RTC_ALARM)
     void SetAlarmTime(uint8_t hour, uint8_t minute, uint8_t day, uint8_t weekday);
 #endif
@@ -369,7 +369,7 @@ private:
 #if defined(TWatch_HAL_PCF8563)
     /* RTC : pcf8563 */
     PCF8563_Class *Rtc = nullptr;
-
+    bool _is_time_updated = false;
 #endif
 #if defined(TWatch_HAL_QMC5883L)
     /* MAG Sensor : qmc5883l*/

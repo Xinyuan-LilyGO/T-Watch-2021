@@ -7,10 +7,7 @@ void TWatchClass::RTC_Init()
     Rtc = new PCF8563_Class;
     Wire.begin(TWATCH_IICSDA, TWATCH_IICSCL);
     Rtc->begin(Wire);
-    // Rtc->setDateTime(2021, 12, 21, 18, 04, 50);
-    // Rtc->setAlarm(99, 05, 99, 99);
-    // Rtc->setAlarmByMinutes(5);
-    // Rtc->getAlarm();
+    Rtc->syncToSystem();
 #if (USE_RTC_ALARM == 1)
     Rtc->enableAlarm();
 #endif
@@ -42,7 +39,8 @@ void TWatchClass::SetAlarmTime(uint8_t hour, uint8_t minute, uint8_t day, uint8_
 #endif
 RTC_Date TWatchClass::GetRTCTime()
 {
-    return Rtc->getDateTime();
+    _is_time_updated = false;
+    return LocalTime;
 }
 
 PCF8563_Class *TWatchClass::GetRTC()
@@ -57,10 +55,13 @@ void TWatchClass::Time_Updata(uint32_t millis, uint32_t time_ms)
     if (millis - Millis > time_ms)
     {
         LocalTime = Rtc->getDateTime();
-        // Serial.printf("%d:%d:%d\r\n", LocalTime.hour, LocalTime.minute, LocalTime.second);
-        // Serial.println(Rtc->formatDateTime(PCF_TIMEFORMAT_YYYY_MM_DD_H_M_S));
+        _is_time_updated = true;
         Millis = millis;
     }
+}
+bool TWatchClass::Time_isUpdated()
+{
+    return _is_time_updated;
 }
 
 #endif

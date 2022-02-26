@@ -42,13 +42,13 @@ void setup()
 {
     twatch = TWatchClass::getWatch();
     tft = twatch->Get_TFT();
-    rtc = twatch->GetRTC_Class();
+    rtc = twatch->GetRTC();
 
     Serial.begin(115200);
 
     Serial.println("RTC Demo");
 
-    twatch->Auto_update_HAL(true, 0);
+    twatch->Auto_update_HAL(true, 1);
 
     tft->fillScreen(TFT_BLACK);
     twatch->Backlight_SetValue(255);
