@@ -153,6 +153,7 @@ void TWatchClass::HAL_Update(void *param)
 #if (TWatch_DEBUG == 1)
         Debugloop(ms, 1000);
 #endif
+        Power_Updata(ms, 5);
         delay(5);
     }
 }
