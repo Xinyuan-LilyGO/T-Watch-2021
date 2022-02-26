@@ -60,11 +60,19 @@
 #define DEBUG(x) Serial.print(x);
 #define DEBUGLN(x) Serial.println(x);
 #define DEBUGF(fmt, ...) Serial.printf(fmt, ##__VA_ARGS__);
+
+#define _DEBUG_IS_RUN_LINE(name, param)                                 \
+    do                                                                  \
+    {                                                                   \
+        DEBUGF("[%s %s] %s: %s: %d\n " #name " : %" #param "\n",        \
+               __DATE__, __TIME__, __FILE__, __func__, __LINE__, name); \
+    } while (0);
+
 #else
 #define DEBUG(x) ;
 #define DEBUGLN(x) ;
-#define DEBUGF(fmt, ...) ;
-
+#define DEBUGF(x) ;
+#define _DEBUG_IS_RUN_LINE ;
 #endif
 
 #define EVENT_IRQ_BIT (_BV(1))
@@ -82,6 +90,8 @@
 #define FONT_COLOR_BLUE "\033[1;34m"
 #define BACKGROUND_COLOR_RED "\033[41m"
 #define BG_RED_FONT_YELLOW "\033[41;33m"
+
+#define POWER_UPDATA_CYCLE 50
 
 typedef TFT_eSPI SCREEN_CLASS;
 typedef void (*irq_Fun_cb_t)(void *user_data_ptr);
@@ -325,7 +335,12 @@ private:
 
 #if defined(TWatch_HAL_Power)
     /* Power */
-    uint8_t Pow_percent;
+    uint16_t _pow_temp[POWER_UPDATA_CYCLE];
+    float _pow_percent = 0;
+    float _pow_cur_vol = 0.0;
+    bool _ischarge = false;
+    uint32_t _power_sub = 0;
+    uint8_t _power_cnt = 0;
 #endif
 
 #if defined(TWatch_HAL_MOTOR)
