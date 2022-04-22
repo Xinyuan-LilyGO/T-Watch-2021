@@ -64,7 +64,7 @@ Other options are default or can be customized
 
 ## To do
 1. ~~Need to port V8 version of LVGL GUI support.~~
-2. Add more sample programs.
+2. ~~Add more sample programs.~~  [WatchFrame](/software/watchframe/README.md)
 3. Add WIFI and BLE fast interface.
 4. Add ffat support.
 
