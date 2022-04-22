@@ -1,5 +1,5 @@
 /**
- * @file lv_text.h
+ * @file lv_txt.h
  *
  */
 
@@ -90,12 +90,14 @@ void lv_txt_get_size(lv_point_t * size_res, const char * text, const lv_font_t *
  * @param letter_space letter space
  * @param max_width max with of the text (break the lines to fit this size) Set CORD_MAX to avoid
  * line breaks
+ * @param used_width When used_width != NULL, save the width of this line if
+ * flag == LV_TEXT_FLAG_NONE, otherwise save -1.
  * @param flags settings for the text from 'txt_flag_type' enum
  * @return the index of the first char of the new line (in byte index not letter index. With UTF-8
  * they are different)
  */
-uint32_t _lv_txt_get_next_line(const char * txt, const lv_font_t * font, lv_coord_t letter_space, lv_coord_t max_width,
-                               lv_text_flag_t flag);
+uint32_t _lv_txt_get_next_line(const char * txt, const lv_font_t * font, lv_coord_t letter_space,
+                               lv_coord_t max_width, lv_coord_t * used_width, lv_text_flag_t flag);
 
 /**
  * Give the length of a text with a given font
@@ -122,15 +124,15 @@ bool _lv_txt_is_cmd(lv_text_cmd_state_t * state, uint32_t c);
 
 /**
  * Insert a string into an other
- * @param txt_buf the original text (must be big enough for the result text)
+ * @param txt_buf the original text (must be big enough for the result text and NULL terminated)
  * @param pos position to insert (0: before the original text, 1: after the first char etc.)
- * @param ins_txt text to insert
+ * @param ins_txt text to insert, must be '\0' terminated
  */
 void _lv_txt_ins(char * txt_buf, uint32_t pos, const char * ins_txt);
 
 /**
  * Delete a part of a string
- * @param txt string to modify
+ * @param txt string to modify, must be '\0' terminated and should point to a heap or stack frame, not read-only memory.
  * @param pos position where to start the deleting (0: before the first char, 1: after the first
  * char etc.)
  * @param len number of characters to delete
@@ -259,4 +261,4 @@ extern uint32_t (*_lv_txt_get_encoded_length)(const char *);
 } /*extern "C"*/
 #endif
 
-#endif /*USE_TXT*/
+#endif /*LV_TXT_H*/

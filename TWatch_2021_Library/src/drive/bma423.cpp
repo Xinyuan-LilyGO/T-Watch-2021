@@ -161,7 +161,7 @@ void TWatchClass::AccSensor_Init()
     // AccSensor_Feature(BMA423_WRIST_WEAR | BMA423_SINGLE_TAP | BMA423_DOUBLE_TAP | BMA423_STEP_CNTR, true);
     // AccSensor_Feature_Int(BMA423_WRIST_WEAR_INT | BMA423_STEP_CNTR_INT | BMA423_SINGLE_TAP_INT | BMA423_DOUBLE_TAP_INT, true);
     AccSensor_Feature(BMA423_STEP_CNTR, true);
-    AccSensor_Feature_Int(BMA423_STEP_CNTR_INT, true);
+    AccSensor_Feature_Int(BMA423_STEP_CNTR_INT, false);
 
     /* Set water-mark level 1 to get interrupt after 20 steps.
      * Range of step counter interrupt is 0 to 20460(resolution of 20 steps).

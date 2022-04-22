@@ -87,35 +87,41 @@ typedef uint32_t lv_part_t;
  * OR-ed values are possible
  */
 enum {
-    LV_OBJ_FLAG_HIDDEN          = (1 << 0),  /**< Make the object hidden. (Like it wasn't there at all)*/
-    LV_OBJ_FLAG_CLICKABLE       = (1 << 1),  /**< Make the object clickable by the input devices*/
-    LV_OBJ_FLAG_CLICK_FOCUSABLE = (1 << 2),  /**< Add focused state to the object when clicked*/
-    LV_OBJ_FLAG_CHECKABLE       = (1 << 3),  /**< Toggle checked state when the object is clicked*/
-    LV_OBJ_FLAG_SCROLLABLE      = (1 << 4),  /**< Make the object scrollable*/
-    LV_OBJ_FLAG_SCROLL_ELASTIC  = (1 << 5),  /**< Allow scrolling inside but with slower speed*/
-    LV_OBJ_FLAG_SCROLL_MOMENTUM = (1 << 6),  /**< Make the object scroll further when "thrown"*/
-    LV_OBJ_FLAG_SCROLL_ONE      = (1 << 7),   /**< Allow scrolling only one snappable children*/
-    LV_OBJ_FLAG_SCROLL_CHAIN    = (1 << 8),  /**< Allow propagating the scroll to a parent*/
-    LV_OBJ_FLAG_SCROLL_ON_FOCUS = (1 << 9),  /**< Automatically scroll object to make it visible when focused*/
-    LV_OBJ_FLAG_SNAPPABLE        = (1 << 10), /**< If scroll snap is enabled on the parent it can snap to this object*/
-    LV_OBJ_FLAG_PRESS_LOCK      = (1 << 11), /**< Keep the object pressed even if the press slid from the object*/
-    LV_OBJ_FLAG_EVENT_BUBBLE    = (1 << 12), /**< Propagate the events to the parent too*/
-    LV_OBJ_FLAG_GESTURE_BUBBLE  = (1 << 13), /**< Propagate the gestures to the parent*/
-    LV_OBJ_FLAG_ADV_HITTEST     = (1 << 14), /**< Allow performing more accurate hit (click) test. E.g. consider rounded corners.*/
-    LV_OBJ_FLAG_IGNORE_LAYOUT   = (1 << 15), /**< Make the object position-able by the layouts*/
-    LV_OBJ_FLAG_FLOATING        = (1 << 16), /**< Do not scroll the object when the parent scrolls and ignore layout*/
+    LV_OBJ_FLAG_HIDDEN          = (1L << 0),  /**< Make the object hidden. (Like it wasn't there at all)*/
+    LV_OBJ_FLAG_CLICKABLE       = (1L << 1),  /**< Make the object clickable by the input devices*/
+    LV_OBJ_FLAG_CLICK_FOCUSABLE = (1L << 2),  /**< Add focused state to the object when clicked*/
+    LV_OBJ_FLAG_CHECKABLE       = (1L << 3),  /**< Toggle checked state when the object is clicked*/
+    LV_OBJ_FLAG_SCROLLABLE      = (1L << 4),  /**< Make the object scrollable*/
+    LV_OBJ_FLAG_SCROLL_ELASTIC  = (1L << 5),  /**< Allow scrolling inside but with slower speed*/
+    LV_OBJ_FLAG_SCROLL_MOMENTUM = (1L << 6),  /**< Make the object scroll further when "thrown"*/
+    LV_OBJ_FLAG_SCROLL_ONE      = (1L << 7),  /**< Allow scrolling only one snappable children*/
+    LV_OBJ_FLAG_SCROLL_CHAIN_HOR = (1L << 8), /**< Allow propagating the horizontal scroll to a parent*/
+    LV_OBJ_FLAG_SCROLL_CHAIN_VER = (1L << 9), /**< Allow propagating the vertical scroll to a parent*/
+    LV_OBJ_FLAG_SCROLL_CHAIN     = (LV_OBJ_FLAG_SCROLL_CHAIN_HOR | LV_OBJ_FLAG_SCROLL_CHAIN_VER),
+    LV_OBJ_FLAG_SCROLL_ON_FOCUS = (1L << 10),  /**< Automatically scroll object to make it visible when focused*/
+    LV_OBJ_FLAG_SCROLL_WITH_ARROW  = (1L << 11), /**< Allow scrolling the focused object with arrow keys*/
+    LV_OBJ_FLAG_SNAPPABLE       = (1L << 12), /**< If scroll snap is enabled on the parent it can snap to this object*/
+    LV_OBJ_FLAG_PRESS_LOCK      = (1L << 13), /**< Keep the object pressed even if the press slid from the object*/
+    LV_OBJ_FLAG_EVENT_BUBBLE    = (1L << 14), /**< Propagate the events to the parent too*/
+    LV_OBJ_FLAG_GESTURE_BUBBLE  = (1L << 15), /**< Propagate the gestures to the parent*/
+    LV_OBJ_FLAG_ADV_HITTEST     = (1L << 16), /**< Allow performing more accurate hit (click) test. E.g. consider rounded corners.*/
+    LV_OBJ_FLAG_IGNORE_LAYOUT   = (1L << 17), /**< Make the object position-able by the layouts*/
+    LV_OBJ_FLAG_FLOATING        = (1L << 18), /**< Do not scroll the object when the parent scrolls and ignore layout*/
+    LV_OBJ_FLAG_OVERFLOW_VISIBLE = (1L << 19), /**< Do not clip the children's content to the parent's boundary*/
 
-    LV_OBJ_FLAG_LAYOUT_1        = (1 << 23), /**< Custom flag, free to use by layouts*/
-    LV_OBJ_FLAG_LAYOUT_2        = (1 << 24), /**< Custom flag, free to use by layouts*/
+    LV_OBJ_FLAG_LAYOUT_1        = (1L << 23), /**< Custom flag, free to use by layouts*/
+    LV_OBJ_FLAG_LAYOUT_2        = (1L << 24), /**< Custom flag, free to use by layouts*/
 
-    LV_OBJ_FLAG_WIDGET_1        = (1 << 25), /**< Custom flag, free to use by widget*/
-    LV_OBJ_FLAG_WIDGET_2        = (1 << 26), /**< Custom flag, free to use by widget*/
+    LV_OBJ_FLAG_WIDGET_1        = (1L << 25), /**< Custom flag, free to use by widget*/
+    LV_OBJ_FLAG_WIDGET_2        = (1L << 26), /**< Custom flag, free to use by widget*/
+    LV_OBJ_FLAG_USER_1          = (1L << 27), /**< Custom flag, free to use by user*/
+    LV_OBJ_FLAG_USER_2          = (1L << 28), /**< Custom flag, free to use by user*/
+    LV_OBJ_FLAG_USER_3          = (1L << 29), /**< Custom flag, free to use by user*/
+    LV_OBJ_FLAG_USER_4          = (1L << 30), /**< Custom flag, free to use by user*/
 
-    LV_OBJ_FLAG_USER_1          = (1 << 27), /**< Custom flag, free to use by user*/
-    LV_OBJ_FLAG_USER_2          = (1 << 28), /**< Custom flag, free to use by user*/
-    LV_OBJ_FLAG_USER_3          = (1 << 29), /**< Custom flag, free to use by user*/
-    LV_OBJ_FLAG_USER_4          = (1 << 30), /**< Custom flag, free to use by user*/
 };
+
+
 typedef uint32_t lv_obj_flag_t;
 
 /**
@@ -378,17 +384,18 @@ static inline lv_coord_t lv_obj_dpx(const lv_obj_t * obj, lv_coord_t n)
  **********************/
 
 #if LV_USE_ASSERT_OBJ
-#  define LV_ASSERT_OBJ(obj_p, obj_class)                                    \
-    LV_ASSERT_MSG(obj_p != NULL, "The object is NULL");               \
-    LV_ASSERT_MSG(lv_obj_has_class(obj_p, obj_class) == true, "Incompatible object type."); \
-    LV_ASSERT_MSG(lv_obj_is_valid(obj_p)  == true, "The object is invalid, deleted or corrupted?");
-
+#  define LV_ASSERT_OBJ(obj_p, obj_class)                                                               \
+    do {                                                                                                \
+        LV_ASSERT_MSG(obj_p != NULL, "The object is NULL");                                             \
+        LV_ASSERT_MSG(lv_obj_has_class(obj_p, obj_class) == true, "Incompatible object type.");         \
+        LV_ASSERT_MSG(lv_obj_is_valid(obj_p)  == true, "The object is invalid, deleted or corrupted?"); \
+    } while(0)
 # else
-# define LV_ASSERT_OBJ(obj_p, obj_class) do{}while(0)
+#  define LV_ASSERT_OBJ(obj_p, obj_class) do{}while(0)
 #endif
 
 #if LV_USE_LOG && LV_LOG_TRACE_OBJ_CREATE
-#  define LV_TRACE_OBJ_CREATE(...) LV_LOG_TRACE( __VA_ARGS__)
+#  define LV_TRACE_OBJ_CREATE(...) LV_LOG_TRACE(__VA_ARGS__)
 #else
 #  define LV_TRACE_OBJ_CREATE(...)
 #endif

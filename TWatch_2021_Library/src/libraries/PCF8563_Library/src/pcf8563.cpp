@@ -36,10 +36,11 @@ int PCF8563_Class::begin(TwoWire &port, uint8_t addr)
     _i2cPort = &port;
     _address = addr;
     _i2cPort->beginTransmission(_address);
-    _i2cPort->write(0x0); // start address
+    _i2cPort->write(0x0);                    // start address
 
-    _i2cPort->write(0x0); // control/status1
-    _i2cPort->write(0x0); // control/status2
+   _i2cPort->write(0x0);  // control/status1
+   _i2cPort->write(0x0);  // control/status2
+
     return (_i2cPort->endTransmission() == 0);
 }
 

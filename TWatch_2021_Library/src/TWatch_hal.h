@@ -60,19 +60,18 @@
 #define DEBUG(x) Serial.print(x);
 #define DEBUGLN(x) Serial.println(x);
 #define DEBUGF(fmt, ...) Serial.printf(fmt, ##__VA_ARGS__);
-
-#define _DEBUG_IS_RUN_LINE(name, param)                                 \
-    do                                                                  \
-    {                                                                   \
-        DEBUGF("[%s %s] %s: %s: %d\n " #name " : %" #param "\n",        \
-               __DATE__, __TIME__, __FILE__, __func__, __LINE__, name); \
+#define _DEBUG_IS_RUN_LINE(name, param)              \
+    do                                               \
+    {                                                \
+        DEBUGF("%s: %d " #name " : %" #param "\n", \
+               __func__, __LINE__, name);            \
     } while (0);
 
 #else
 #define DEBUG(x) ;
 #define DEBUGLN(x) ;
-#define DEBUGF(x) ;
-#define _DEBUG_IS_RUN_LINE ;
+#define DEBUGF(fmt, ...) ;
+#define _DEBUG_IS_RUN_LINE(name, param) ;
 #endif
 
 #define EVENT_IRQ_BIT (_BV(1))
@@ -173,7 +172,7 @@ public:
 #if defined(TWatch_HAL_Power)
     /* Power */
     void Power_Init();
-    uint8_t Get_Power();
+    float Get_Power_Volt();
     float Get_Power_Percent();
     void Power_Updata(uint32_t millis, uint32_t time_ms);
 #endif
@@ -411,7 +410,6 @@ private:
     void lv_ffat_fs_if_init(void);
     // void display_send_DMA_done_cb(spi_transaction_t *trans);
 #endif
-
     void tw_bubble_sort(uint16_t *arr, int len)
     {
         int i, j;

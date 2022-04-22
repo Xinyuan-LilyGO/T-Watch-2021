@@ -1,13 +1,7 @@
 //#include "Input.h"
 #include "./TWatch_hal.h"
+
 #if (TWatch_APP_LVGL == 1) && defined(TWatch_HAL_Display)
-/*
-#define USE_TFT_DMA 0
-#define USE_PSRAM 0
- */
-#if USE_TFT_DMA && USE_PSRAM
-#error "USE TFT DMA and USE PSRAM cannot be used at the same time"
-#endif
 
 lv_disp_drv_t *disp_drv_p;
 
@@ -22,7 +16,7 @@ void TWatchClass::disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_colo
     disp_drv_p = disp;
     screen->pushPixelsDMA((uint16_t *)color_p, w * h);
     screen->endWrite();
-    lv_disp_flush_ready(disp);
+    // lv_disp_flush_ready(disp);
 #else
     screen->pushColors((uint16_t *)&color_p->full, w * h);
     screen->endWrite();
@@ -45,8 +39,12 @@ void display_wait_cb(_lv_disp_drv_t *disp_drv)
 void TWatchClass::lv_port_disp_init(SCREEN_CLASS *scr)
 {
     static lv_disp_draw_buf_t draw_buf;
-    // Serial.println(FONT_COLOR_RED "lv_port_disp_init" COLOR_NONE);
-#if USE_PSRAM
+
+#if USE_TFT_DMA == 1
+    tft->initDMA(true, display_send_DMA_done_cb);
+    // tft->initDMA(true);
+#endif
+#if defined(TWatch_HAL_PSRAM)
     lv_disp_buf_p = (lv_color_t *)ps_calloc(sizeof(lv_color_t), DISP_BUF_SIZE);
     lv_disp_draw_buf_init(&draw_buf, lv_disp_buf_p, NULL, DISP_BUF_SIZE);
 #else

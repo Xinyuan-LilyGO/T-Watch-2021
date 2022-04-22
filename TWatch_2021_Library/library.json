@@ -14,7 +14,7 @@
             "maintainer": true
         }
     ],
-    "version": "0.0.3",
+    "version": "0.0.4",
     "frameworks": "arduino",
     "platforms": "esp32"
 }

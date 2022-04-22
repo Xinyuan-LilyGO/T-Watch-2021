@@ -36,7 +36,7 @@ void setup()
     tft->fillScreen(TFT_BLACK);
     twatch->Backlight_SetValue(255);
 
-    twatch->Auto_update_HAL(true, 1);
+    twatch->Auto_update_HAL(true, 0);
 
     tft->setTextFont(2);
     tft->setTextColor(TFT_BLACK, TFT_WHITE);

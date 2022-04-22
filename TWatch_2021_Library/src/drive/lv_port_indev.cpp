@@ -30,24 +30,24 @@ static void encoder_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 
 #if defined(TWatch_HAL_BOTTON)
 
-
 void TWatchClass::botton_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 {
     EventBits_t bit = xEventGroupGetBits(_ttgo->_hal_botton_event);
     bool isPress = false;
-    if (bit & EVENT_CLICK_BIT(1))
-    {
-        DEBUGLN("EVENT_CLICK_BIT EVENT :1");
-        xEventGroupClearBits(_ttgo->_hal_botton_event, EVENT_CLICK_BIT(1));
-        data->key = LV_KEY_ENTER;
-        isPress = true;
-    }
-    else if (bit & EVENT_CLICK_BIT(2))
+    // if (bit & EVENT_CLICK_BIT(1))
+    // {
+    //     DEBUGLN("EVENT_CLICK_BIT EVENT :1");
+    //     xEventGroupClearBits(_ttgo->_hal_botton_event, EVENT_CLICK_BIT(1));
+    //     data->key = LV_KEY_ENTER;
+    //     isPress = true;
+    // }
+    // else 
+    if (bit & EVENT_CLICK_BIT(2))
     {
         DEBUGLN("EVENT_CLICK_BIT EVENT :2");
         xEventGroupClearBits(_ttgo->_hal_botton_event, EVENT_CLICK_BIT(2));
         data->key = LV_KEY_LEFT;
-        //data->enc_diff = 1;
+        // data->enc_diff = 1;
         isPress = true;
     }
     else if (bit & EVENT_CLICK_BIT(3))
@@ -55,7 +55,7 @@ void TWatchClass::botton_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *dat
         DEBUGLN("EVENT_CLICK_BIT EVENT :3");
         xEventGroupClearBits(_ttgo->_hal_botton_event, EVENT_CLICK_BIT(3));
         data->key = LV_KEY_RIGHT;
-        //data->enc_diff = -1;
+        // data->enc_diff = -1;
         isPress = true;
     }
     data->state = isPress ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
@@ -86,13 +86,13 @@ void TWatchClass::lv_port_indev_init(void)
 
 #if defined(TWatch_HAL_BOTTON)
     static lv_indev_drv_t botton_drv;
-    Botton_BindEvent(TWATCH_BTN_1, Click, []
-                     {
-        if (_ttgo->_hal_botton_event)
-        {
-            xEventGroupSetBits(_ttgo->_hal_botton_event, EVENT_CLICK_BIT(1));
-        } 
-        DEBUGLN("TWATCH_BTN_1 EVENT :Click"); });
+    // Botton_BindEvent(TWATCH_BTN_1, Click, []
+    //                  {
+    //     if (_ttgo->_hal_botton_event)
+    //     {
+    //         xEventGroupSetBits(_ttgo->_hal_botton_event, EVENT_CLICK_BIT(1));
+    //     } 
+    //     DEBUGLN("TWATCH_BTN_1 EVENT :Click"); });
 
     Botton_BindEvent(TWATCH_BTN_2, Click, []
                      {
@@ -114,8 +114,6 @@ void TWatchClass::lv_port_indev_init(void)
     botton_drv.read_cb = botton_read;
     lv_indev_drv_register(&botton_drv);
 #endif
-
-
 }
 
 #endif

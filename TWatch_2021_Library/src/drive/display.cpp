@@ -13,10 +13,10 @@ void TWatchClass::Display_Init()
     tft->invertDisplay(true);
     tft->setSwapBytes(true);
     tft->setRotation(TFT_Rotation);
-#if USE_TFT_DMA == 1
-    // tft->initDMA(true, display_send_DMA_done_cb);
-    tft->initDMA(true);
-#endif
+// #if USE_TFT_DMA == 1
+//     // tft->initDMA(true, display_send_DMA_done_cb);
+//     tft->initDMA(true);
+// #endif
 }
 TFT_eSPI *TWatchClass::Get_TFT()
 {

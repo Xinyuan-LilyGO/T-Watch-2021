@@ -269,7 +269,7 @@ lv_res_t lv_obj_get_local_style_prop(lv_obj_t * obj, lv_style_prop_t prop, lv_st
     uint32_t i;
     for(i = 0; i < obj->style_cnt; i++) {
         if(obj->styles[i].is_local &&
-           obj->styles[i].selector ==  selector) {
+           obj->styles[i].selector == selector) {
             return lv_style_get_prop(obj->styles[i].style, prop, value);
         }
     }
@@ -365,8 +365,7 @@ _lv_style_state_cmp_t _lv_obj_style_state_compare(lv_obj_t * obj, lv_state_t sta
         if(obj->styles[i].is_trans) continue;
 
         lv_state_t state_act = lv_obj_style_get_selector_state(obj->styles[i].selector);
-        lv_part_t part_act = lv_obj_style_get_selector_part(obj->styles[i].selector);
-        /*The style is valid for a stat but not the other*/
+        /*The style is valid for a state but not the other*/
         bool valid1 = state_act & (~state1) ? false : true;
         bool valid2 = state_act & (~state2) ? false : true;
         if(valid1 != valid2) {
@@ -394,13 +393,7 @@ _lv_style_state_cmp_t _lv_obj_style_state_compare(lv_obj_t * obj, lv_state_t sta
             else if(lv_style_get_prop(style, LV_STYLE_TRANSFORM_ZOOM, &v)) layout_diff = true;
 
             if(layout_diff) {
-                if(part_act == LV_PART_MAIN) {
-                    return _LV_STYLE_STATE_CMP_DIFF_LAYOUT;
-                }
-                else {
-                    res = _LV_STYLE_STATE_CMP_DIFF_DRAW_PAD;
-                    continue;
-                }
+                return _LV_STYLE_STATE_CMP_DIFF_LAYOUT;
             }
 
             /*Check for draw pad changes*/
@@ -429,7 +422,7 @@ void lv_obj_fade_in(lv_obj_t * obj, uint32_t time, uint32_t delay)
     lv_anim_t a;
     lv_anim_init(&a);
     lv_anim_set_var(&a, obj);
-    lv_anim_set_values(&a, LV_OPA_TRANSP, LV_OPA_COVER);
+    lv_anim_set_values(&a, 0, LV_OPA_COVER);
     lv_anim_set_exec_cb(&a, fade_anim_cb);
     lv_anim_set_ready_cb(&a, fade_in_anim_ready);
     lv_anim_set_time(&a, time);
@@ -442,7 +435,7 @@ void lv_obj_fade_out(lv_obj_t * obj, uint32_t time, uint32_t delay)
     lv_anim_t a;
     lv_anim_init(&a);
     lv_anim_set_var(&a, obj);
-    lv_anim_set_values(&a, LV_OPA_COVER, LV_OPA_TRANSP);
+    lv_anim_set_values(&a, lv_obj_get_style_opa(obj, 0), LV_OPA_TRANSP);
     lv_anim_set_exec_cb(&a, fade_anim_cb);
     lv_anim_set_time(&a, time);
     lv_anim_set_delay(&a, delay);
@@ -475,12 +468,11 @@ lv_text_align_t lv_obj_calculate_style_text_align(const struct _lv_obj_t * obj, 
 /**
  * Get the local style of an object for a given part and for a given state.
  * If the local style for the part-state pair doesn't exist allocate and return it.
- * @param obj   pointer to an object
- * @param part  the part in whose local style to get
- * @param state the state in whose local style to get
+ * @param obj pointer to an object
+ * @param selector OR-ed value of parts and state for which the style should be get
  * @return pointer to the local style
  */
-static lv_style_t * get_local_style(lv_obj_t * obj,  lv_style_selector_t selector)
+static lv_style_t * get_local_style(lv_obj_t * obj, lv_style_selector_t selector)
 {
     uint32_t i;
     for(i = 0; i < obj->style_cnt; i++) {
@@ -513,8 +505,7 @@ static lv_style_t * get_local_style(lv_obj_t * obj,  lv_style_selector_t selecto
  * Get the transition style of an object for a given part and for a given state.
  * If the transition style for the part-state pair doesn't exist allocate and return it.
  * @param obj   pointer to an object
- * @param part  the part in whose local style to get
- * @param state the state in whose local style to get
+ * @param selector OR-ed value of parts and state for which the style should be get
  * @return pointer to the transition style
  */
 static _lv_obj_style_t * get_trans_style(lv_obj_t * obj,  lv_style_selector_t selector)

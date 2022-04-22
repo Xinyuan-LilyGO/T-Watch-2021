@@ -85,7 +85,7 @@ void TWatchClass::Auto_update_HAL(bool en, uint8_t core)
     if (en)
     {
         if (HAL_Update_Handle == NULL)
-            xTaskCreatePinnedToCore(HAL_Update, "HAL_Update", 1024 * 10, NULL, 2, &HAL_Update_Handle, core);
+            xTaskCreatePinnedToCore(HAL_Update, "HAL_Update", 1024 * 8, NULL, 2, &HAL_Update_Handle, core);
     }
     else
     {
@@ -102,11 +102,11 @@ void Debugloop(uint32_t millis, uint32_t time_ms)
     static uint32_t Millis;
     if (millis - Millis > time_ms)
     {
-        // DEBUGF("Total heap: %d\n", ESP.getHeapSize());
-        // DEBUGF("Free heap: %d\n", ESP.getFreeHeap());
-        // DEBUGF("Max Alloc Heap: %d\n", ESP.getMaxAllocHeap());
-        // DEBUGF("Total PSRAM: %d\n", ESP.getPsramSize());
-        // DEBUGF("Free PSRAM: %d\n", ESP.getFreePsram());
+        DEBUGF("Total heap: %d\n", ESP.getHeapSize());
+        DEBUGF("Free heap: %d\n", ESP.getFreeHeap());
+        DEBUGF("Max Alloc Heap: %d\n", ESP.getMaxAllocHeap());
+        DEBUGF("Total PSRAM: %d\n", ESP.getPsramSize());
+        DEBUGF("Free PSRAM: %d\n", ESP.getFreePsram());
         Millis = millis;
     }
 }
@@ -151,17 +151,17 @@ void TWatchClass::HAL_Update(void *param)
         _ttgo->HAL_AIO_IRQ_cb();
 #endif
 #if (TWatch_DEBUG == 1)
-        Debugloop(ms, 1000);
+        // Debugloop(ms, 1000);
 #endif
-        Power_Updata(ms, 5);
-        delay(5);
+        _ttgo->Power_Updata(ms, 5);
+        delay(1);
     }
 }
 
 void TWatchClass::HAL_Sleep(bool deep)
 {
     uint64_t mask;
-
+    uint32_t bl = Backlight_GetValue();
     // Touch_Interrupt(true);
     // AccSensor_Feature(BMA423_WRIST_WEAR | BMA423_SINGLE_TAP | BMA423_DOUBLE_TAP | BMA423_STEP_CNTR, true);
     // AccSensor_Feature_Int(BMA423_WRIST_WEAR_INT | BMA423_STEP_CNTR_INT | BMA423_SINGLE_TAP_INT | BMA423_DOUBLE_TAP_INT, true);
@@ -173,6 +173,8 @@ void TWatchClass::HAL_Sleep(bool deep)
 
     pinMode(TWATCH_PWR_ON, OUTPUT);
     digitalWrite(TWATCH_PWR_ON, LOW);
+
+    Backlight_SetValue(0);
 #if defined(TWATCH_AIO_INT)
     mask = 1ull << TWATCH_AIO_INT;
     esp_sleep_enable_ext1_wakeup(mask, ESP_EXT1_WAKEUP_ALL_LOW); // Screen int
@@ -182,14 +184,17 @@ void TWatchClass::HAL_Sleep(bool deep)
     esp_sleep_enable_ext1_wakeup(mask, ESP_EXT1_WAKEUP_ALL_LOW); // Screen int
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_39 /* TWATCH_BMA_INT_2 */, LOW);
 #endif
+    Serial.printf("go to sleep\n");
 
     if (deep)
-    {
         esp_deep_sleep_start();
-    }
     else
     {
         esp_light_sleep_start();
+
+        Backlight_SetValue(bl);
+        digitalWrite(TWATCH_PWR_ON, HIGH);
+        Touch->setTouchInt(false);
     }
 }
 

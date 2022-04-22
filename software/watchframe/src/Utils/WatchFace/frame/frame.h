@@ -1,0 +1,11 @@
+#ifndef _FRAME_H_
+#define _FRAME_H_
+
+#include "TWatch_hal.h"
+#include "libraries/lvgl/lvgl.h"
+#include "../../Utils.h"
+#include "../../../PageManager/PageManager.h"
+#include "../../../PageManager/Page_Watchface.h"
+extern struct watchface_item_t watchface_frame;
+
+#endif /* _FRAME_H_ */

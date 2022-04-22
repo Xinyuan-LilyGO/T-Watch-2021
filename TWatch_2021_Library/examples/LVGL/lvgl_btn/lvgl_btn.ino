@@ -30,7 +30,7 @@ void setup()
   Serial.println("lvgl btn Demo (LVGL)");
   twatch->Backlight_SetValue(100);
 
-  twatch->Auto_update_HAL(true, 1);
+  twatch->Auto_update_HAL(true, 0);
 
   lv_obj_t *label;
   lv_obj_t *btn1 = lv_btn_create(lv_scr_act());

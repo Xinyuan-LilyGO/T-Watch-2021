@@ -59,6 +59,7 @@ void TWatchClass::Time_Updata(uint32_t millis, uint32_t time_ms)
         Millis = millis;
     }
 }
+
 bool TWatchClass::Time_isUpdated()
 {
     return _is_time_updated;

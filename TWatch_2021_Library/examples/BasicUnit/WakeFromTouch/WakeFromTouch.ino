@@ -70,7 +70,7 @@ void setup()
 
     Serial.println("Touch Wake Up Demo");
 
-    twatch->Auto_update_HAL(true, 1);
+    twatch->Auto_update_HAL(true, 0);
 
     tft->setTextFont(2);
     tft->setTextColor(TFT_WHITE, TFT_BLACK);

@@ -18,10 +18,9 @@ void setup()
   Serial.begin(115200);
 
   ttgo = TWatchClass::getWatch();
+  ttgo->HAL_Init();
 
   ttgo->Backlight_SetValue(100);
-
-  twatch->Auto_update_HAL(true, 1);
   /*Create a container with ROW flex direction*/
   lv_obj_t *cont_row = lv_obj_create(lv_scr_act());
   lv_obj_set_size(cont_row, 300, 75);

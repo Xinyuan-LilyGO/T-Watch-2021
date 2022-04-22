@@ -6,11 +6,12 @@ If you don't know which one to choose, look at the silkscreen on the circuit boa
 */
 
 // #define TWatch2021_V1
-// #define TWatch2021_V1_2
+#define TWatch2021_V1_2
 
 /****************** Generic function, no need to be annotable *******************/
 // BSP CONFIG
-#define TWatch_HAL_Power
+// #define TWatch_HAL_PSRAM //V1 and V1.2 cannot be enabled on platformIO, causing a reset. They can be enabled on Arduino IDE
+#define TWatch_HAL_Power 
 // #define TWatch_HAL_WIFI
 // #define TWatch_HAL_BLE
 #define TWatch_HAS_FFAT
@@ -29,8 +30,8 @@ If you don't know which one to choose, look at the silkscreen on the circuit boa
 
 // APP CONFIG
 #define TWatch_DEBUG 1
-#define TWatch_APP_LVGL 0
-    /*    ├─ */ #define DISP_BUF_SIZE  (SCREEN_WIDTH * SCREEN_HEIGHT * 0.8)
+#define TWatch_APP_LVGL 1
+    /*    ├─ */ #define DISP_BUF_SIZE  (SCREEN_WIDTH * SCREEN_HEIGHT *0.5)
 
 /****************** Generic function, no need to be annotable *******************/
 
