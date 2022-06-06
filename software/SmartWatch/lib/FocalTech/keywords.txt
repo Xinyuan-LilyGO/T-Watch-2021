@@ -1,0 +1,42 @@
+#######################################
+# Syntax Coloring Map For FocalTech Library By lewis He
+# github:https://github.com/lewisxhe
+#######################################
+
+#######################################
+# Datatypes             (KEYWORD1)
+#######################################
+FocalTech_Class	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin                   KEYWORD2
+setTheshold             KEYWORD2
+getThreshold            KEYWORD2
+getMonitorTime          KEYWORD2
+setMonitorTime          KEYWORD2
+enableAutoCalibration   KEYWORD2
+disableAutoCalibration  KEYWORD2
+getLibraryVersion       KEYWORD2
+setPowerMode            KEYWORD2
+getVendorID             KEYWORD2
+getVendor1ID            KEYWORD2
+getErrorCode            KEYWORD2
+enableINT               KEYWORD2
+disableINT              KEYWORD2
+getPoint                KEYWORD2
+getTouched              KEYWORD2
+getDeviceMode           KEYWORD2
+getGesture              KEYWORD2
+
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
