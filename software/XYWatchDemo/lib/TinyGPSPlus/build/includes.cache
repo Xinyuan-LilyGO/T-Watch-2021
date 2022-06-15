@@ -1,0 +1,37 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "D:\\Users\\19021\\Documents\\Arduino\\hardware\\espressif\\esp32\\cores\\esp32"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "D:\\Users\\19021\\Documents\\Arduino\\hardware\\espressif\\esp32\\variants\\esp32"
+  },
+  {
+    "Sourcefile": "d:\\Users\\19021\\Documents\\Arduino\\libraries\\TinyGPSPlus\\build\\sketch\\DeviceExample.ino.cpp",
+    "Include": "TinyGPS++.h",
+    "Includepath": "D:\\Users\\19021\\Documents\\Arduino\\libraries\\TinyGPSPlus\\src"
+  },
+  {
+    "Sourcefile": "d:\\Users\\19021\\Documents\\Arduino\\libraries\\TinyGPSPlus\\build\\sketch\\DeviceExample.ino.cpp",
+    "Include": "SoftwareSerial.h",
+    "Includepath": "D:\\Users\\19021\\Documents\\Arduino\\libraries\\EspSoftwareSerial\\src"
+  },
+  {
+    "Sourcefile": "d:\\Users\\19021\\Documents\\Arduino\\libraries\\TinyGPSPlus\\build\\sketch\\DeviceExample.ino.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "D:\\Users\\19021\\Documents\\Arduino\\libraries\\TinyGPSPlus\\src\\TinyGPS++.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "D:\\Users\\19021\\Documents\\Arduino\\libraries\\EspSoftwareSerial\\src\\SoftwareSerial.cpp",
+    "Include": "",
+    "Includepath": null
+  }
+]

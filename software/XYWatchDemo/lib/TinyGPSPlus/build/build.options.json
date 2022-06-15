@@ -1,0 +1,12 @@
+{
+  "additionalFiles": "",
+  "builtInLibrariesFolders": "D:\\Apps\\Arduino\\libraries",
+  "builtInToolsFolders": "D:\\Apps\\Arduino\\tools-builder,D:\\Apps\\Arduino\\hardware\\tools\\avr,C:\\Users\\19021\\AppData\\Local\\Arduino15\\packages",
+  "compiler.optimization_flags": "",
+  "customBuildProperties": "build.path=d:\\Users\\19021\\Documents\\Arduino\\libraries\\TinyGPSPlus\\build,build.warn_data_percentage=75",
+  "fqbn": "espressif:esp32:esp32:PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,LoopCore=1,EventsCore=1,DebugLevel=none",
+  "hardwareFolders": "D:\\Apps\\Arduino\\hardware,C:\\Users\\19021\\AppData\\Local\\Arduino15\\packages,D:\\Users\\19021\\Documents\\Arduino\\hardware",
+  "otherLibrariesFolders": "D:\\Users\\19021\\Documents\\Arduino\\libraries",
+  "runtime.ide.version": "10815",
+  "sketchLocation": "d:\\Users\\19021\\Documents\\Arduino\\libraries\\TinyGPSPlus\\examples\\DeviceExample\\DeviceExample.ino"
+}
