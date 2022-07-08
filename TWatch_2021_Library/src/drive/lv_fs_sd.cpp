@@ -1,8 +1,8 @@
 #include "./TWatch_hal.h"
 
-#if (TWatch_APP_LVGL == 1)
+#if CONFIG_TWATCH_APP_LVGL
 
-#if defined(TWatch_HAS_SD)
+#if defined(CONFIG_TWATCH_HAS_SD) && 0
 #include "SdFat.h"
 /*********************
  *      DEFINES
@@ -20,7 +20,7 @@ typedef SdFile file_t;
 typedef FatFile rddir_t;
 
 #define SD_FILE(file_p) ((file_t *)file_p)
-#define SD_DIR(dir_p) ((rddir_t *)dir_p)
+#define SD_DIR(dir_p)   ((rddir_t *)dir_p)
 
 /**********************
  *  STATIC PROTOTYPES
@@ -49,50 +49,47 @@ static lv_fs_res_t fs_dir_close(lv_fs_drv_t *drv, void *dir_p);
  *   GLOBAL FUNCTIONS
  **********************/
 
-void lv_fs_if_init(void)
-{
-    /*----------------------------------------------------
-     * Initialize your storage device and File System
-     * -------------------------------------------------*/
-    fs_init();
+void lv_fs_if_init(void) {
+  /*----------------------------------------------------
+   * Initialize your storage device and File System
+   * -------------------------------------------------*/
+  fs_init();
 
-    /*---------------------------------------------------
-     * Register the file system interface  in LittlevGL
-     *--------------------------------------------------*/
+  /*---------------------------------------------------
+   * Register the file system interface  in LittlevGL
+   *--------------------------------------------------*/
 
-    /* Add a simple drive to open images */
-    static lv_fs_drv_t fs_drv;
-    lv_fs_drv_init(&fs_drv);
+  /* Add a simple drive to open images */
+  static lv_fs_drv_t fs_drv;
+  lv_fs_drv_init(&fs_drv);
 
-    /*Set up fields...*/
-    fs_drv.letter = SD_LETTER;
-    fs_drv.ready_cb = fs_ready;
-    fs_drv.open_cb = fs_open;
-    fs_drv.close_cb = fs_close;
-    fs_drv.read_cb = fs_read;
-    fs_drv.write_cb = fs_write;
-    fs_drv.seek_cb = fs_seek;
-    fs_drv.tell_cb = fs_tell;
+  /*Set up fields...*/
+  fs_drv.letter = SD_LETTER;
+  fs_drv.ready_cb = fs_ready;
+  fs_drv.open_cb = fs_open;
+  fs_drv.close_cb = fs_close;
+  fs_drv.read_cb = fs_read;
+  fs_drv.write_cb = fs_write;
+  fs_drv.seek_cb = fs_seek;
+  fs_drv.tell_cb = fs_tell;
 
-    fs_drv.dir_close_cb = fs_dir_close;
-    fs_drv.dir_open_cb = fs_dir_open;
-    fs_drv.dir_read_cb = fs_dir_read;
+  fs_drv.dir_close_cb = fs_dir_close;
+  fs_drv.dir_open_cb = fs_dir_open;
+  fs_drv.dir_read_cb = fs_dir_read;
 
-    lv_fs_drv_register(&fs_drv);
+  lv_fs_drv_register(&fs_drv);
 }
 
 /**********************
  *   STATIC FUNCTIONS
  **********************/
 
-static bool fs_ready(lv_fs_drv_t *drv)
-{
-    return TWatch::SD_GetReady();
+static bool fs_ready(lv_fs_drv_t *drv) {
+  return TWatch::SD_GetReady();
 }
 
 /* Initialize your Storage device and File system. */
-static void fs_init(void)
-{
+static void fs_init(void) {
 }
 
 /**
@@ -102,40 +99,32 @@ static void fs_init(void)
  * @param mode read: FS_MODE_RD, write: FS_MODE_WR, both: FS_MODE_RD | FS_MODE_WR
  * @return pointer to a file_t variable
  */
-static void *fs_open(lv_fs_drv_t *drv, const char *path, lv_fs_mode_t mode)
-{
-    oflag_t oflag = O_RDONLY;
+static void *fs_open(lv_fs_drv_t *drv, const char *path, lv_fs_mode_t mode) {
+  oflag_t oflag = O_RDONLY;
 
-    if (mode == LV_FS_MODE_WR)
-    {
-        oflag = O_WRONLY;
-    }
-    else if (mode == LV_FS_MODE_RD)
-    {
-        oflag = O_RDONLY;
-    }
-    else if (mode == (LV_FS_MODE_WR | LV_FS_MODE_RD))
-    {
-        oflag = O_RDWR | O_CREAT;
-    }
+  if (mode == LV_FS_MODE_WR) {
+    oflag = O_WRONLY;
+  } else if (mode == LV_FS_MODE_RD) {
+    oflag = O_RDONLY;
+  } else if (mode == (LV_FS_MODE_WR | LV_FS_MODE_RD)) {
+    oflag = O_RDWR | O_CREAT;
+  }
 
-    file_t *file_p = (file_t *)lv_mem_alloc(sizeof(file_t));
+  file_t *file_p = (file_t *)lv_mem_alloc(sizeof(file_t));
 
-    if (file_p == NULL)
-    {
-        return NULL;
-    }
+  if (file_p == NULL) {
+    return NULL;
+  }
 
-    file_t file;
-    *file_p = file;
+  file_t file;
+  *file_p = file;
 
-    if (!file_p->open(path, oflag))
-    {
-        lv_mem_free(file_p);
-        file_p = NULL;
-    }
+  if (!file_p->open(path, oflag)) {
+    lv_mem_free(file_p);
+    file_p = NULL;
+  }
 
-    return file_p;
+  return file_p;
 }
 
 /**
@@ -145,13 +134,12 @@ static void *fs_open(lv_fs_drv_t *drv, const char *path, lv_fs_mode_t mode)
  * @return LV_FS_RES_OK: no error, the file is read
  *         any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_close(lv_fs_drv_t *drv, void *file_p)
-{
-    lv_fs_res_t res = SD_FILE(file_p)->close() ? LV_FS_RES_OK : LV_FS_RES_FS_ERR;
-    //    SD_FILE(file_p)->~SdFile();
-    lv_mem_free(file_p);
+static lv_fs_res_t fs_close(lv_fs_drv_t *drv, void *file_p) {
+  lv_fs_res_t res = SD_FILE(file_p)->close() ? LV_FS_RES_OK : LV_FS_RES_FS_ERR;
+  //    SD_FILE(file_p)->~SdFile();
+  lv_mem_free(file_p);
 
-    return res;
+  return res;
 }
 
 /**
@@ -165,18 +153,16 @@ static lv_fs_res_t fs_close(lv_fs_drv_t *drv, void *file_p)
  *         any error from lv_fs_res_t enum
  */
 
-static lv_fs_res_t fs_read(lv_fs_drv_t *drv, void *file_p, void *buf, uint32_t btr, uint32_t *br)
-{
-    int ret = SD_FILE(file_p)->read(buf, btr);
+static lv_fs_res_t fs_read(lv_fs_drv_t *drv, void *file_p, void *buf, uint32_t btr, uint32_t *br) {
+  int ret = SD_FILE(file_p)->read(buf, btr);
 
-    if (ret < 0)
-    {
-        return LV_FS_RES_FS_ERR;
-    }
+  if (ret < 0) {
+    return LV_FS_RES_FS_ERR;
+  }
 
-    *br = ret;
+  *br = ret;
 
-    return LV_FS_RES_OK;
+  return LV_FS_RES_OK;
 }
 
 /**
@@ -188,18 +174,16 @@ static lv_fs_res_t fs_read(lv_fs_drv_t *drv, void *file_p, void *buf, uint32_t b
  * @param br the number of real written bytes (Bytes Written). NULL if unused.
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_write(lv_fs_drv_t *drv, void *file_p, const void *buf, uint32_t btw, uint32_t *bw)
-{
-    int ret = SD_FILE(file_p)->write((const uint8_t *)buf, btw);
+static lv_fs_res_t fs_write(lv_fs_drv_t *drv, void *file_p, const void *buf, uint32_t btw, uint32_t *bw) {
+  int ret = SD_FILE(file_p)->write((const uint8_t *)buf, btw);
 
-    if (ret < 0)
-    {
-        return LV_FS_RES_FS_ERR;
-    }
+  if (ret < 0) {
+    return LV_FS_RES_FS_ERR;
+  }
 
-    *bw = ret;
+  *bw = ret;
 
-    return LV_FS_RES_OK;
+  return LV_FS_RES_OK;
 }
 
 /**
@@ -210,26 +194,18 @@ static lv_fs_res_t fs_write(lv_fs_drv_t *drv, void *file_p, const void *buf, uin
  * @return LV_FS_RES_OK: no error, the file is read
  *         any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_seek(lv_fs_drv_t *drv, void *file_p, uint32_t pos, lv_fs_whence_t whence)
-{
-    if (whence == LV_FS_SEEK_SET)
-    {
-        SD_FILE(file_p)->seekSet(pos);
-    }
-    else if (whence == LV_FS_SEEK_CUR)
-    {
-        SD_FILE(file_p)->seekCur(pos);
-    }
-    else if (whence == LV_FS_SEEK_END)
-    {
-        SD_FILE(file_p)->seekEnd();
-    }
-    else
-    {
-        return LV_FS_RES_UNKNOWN;
-    }
+static lv_fs_res_t fs_seek(lv_fs_drv_t *drv, void *file_p, uint32_t pos, lv_fs_whence_t whence) {
+  if (whence == LV_FS_SEEK_SET) {
+    SD_FILE(file_p)->seekSet(pos);
+  } else if (whence == LV_FS_SEEK_CUR) {
+    SD_FILE(file_p)->seekCur(pos);
+  } else if (whence == LV_FS_SEEK_END) {
+    SD_FILE(file_p)->seekEnd();
+  } else {
+    return LV_FS_RES_UNKNOWN;
+  }
 
-    return LV_FS_RES_OK;
+  return LV_FS_RES_OK;
 }
 
 /**
@@ -240,10 +216,9 @@ static lv_fs_res_t fs_seek(lv_fs_drv_t *drv, void *file_p, uint32_t pos, lv_fs_w
  * @return LV_FS_RES_OK: no error, the file is read
  *         any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_tell(lv_fs_drv_t *drv, void *file_p, uint32_t *pos_p)
-{
-    *pos_p = SD_FILE(file_p)->curPosition();
-    return LV_FS_RES_OK;
+static lv_fs_res_t fs_tell(lv_fs_drv_t *drv, void *file_p, uint32_t *pos_p) {
+  *pos_p = SD_FILE(file_p)->curPosition();
+  return LV_FS_RES_OK;
 }
 
 /**
@@ -253,25 +228,22 @@ static lv_fs_res_t fs_tell(lv_fs_drv_t *drv, void *file_p, uint32_t *pos_p)
  * @param path path to a directory
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static void *fs_dir_open(lv_fs_drv_t *drv, const char *path)
-{
-    rddir_t *dir_p = (file_t *)lv_mem_alloc(sizeof(rddir_t));
+static void *fs_dir_open(lv_fs_drv_t *drv, const char *path) {
+  rddir_t *dir_p = (file_t *)lv_mem_alloc(sizeof(rddir_t));
 
-    if (dir_p == NULL)
-    {
-        return NULL;
-    }
+  if (dir_p == NULL) {
+    return NULL;
+  }
 
-    rddir_t dir;
-    *dir_p = dir;
+  rddir_t dir;
+  *dir_p = dir;
 
-    if (!dir_p->open(path))
-    {
-        lv_mem_free(dir_p);
-        dir_p = NULL;
-    }
+  if (!dir_p->open(path)) {
+    lv_mem_free(dir_p);
+    dir_p = NULL;
+  }
 
-    return dir_p;
+  return dir_p;
 }
 
 /**
@@ -282,34 +254,28 @@ static void *fs_dir_open(lv_fs_drv_t *drv, const char *path)
  * @param fn pointer to a buffer to store the filename
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_dir_read(lv_fs_drv_t *drv, void *dir_p, char *fn)
-{
-    file_t file;
-    char name[128];
+static lv_fs_res_t fs_dir_read(lv_fs_drv_t *drv, void *dir_p, char *fn) {
+  file_t file;
+  char name[128];
 
-    if (file.openNext(SD_DIR(dir_p), O_RDONLY))
-    {
-        file.getName(name, sizeof(name));
+  if (file.openNext(SD_DIR(dir_p), O_RDONLY)) {
+    file.getName(name, sizeof(name));
 
-        if (file.isDir())
-        {
-            fn[0] = '/';
-            strcpy(&fn[1], name);
-        }
-        else
-        {
-            strcpy(fn, name);
-        }
-
-        file.close();
+    if (file.isDir()) {
+      fn[0] = '/';
+      strcpy(&fn[1], name);
+    } else {
+      strcpy(fn, name);
     }
 
-    if (SD_DIR(dir_p)->getError())
-    {
-        return LV_FS_RES_UNKNOWN;
-    }
+    file.close();
+  }
 
-    return LV_FS_RES_OK;
+  if (SD_DIR(dir_p)->getError()) {
+    return LV_FS_RES_UNKNOWN;
+  }
+
+  return LV_FS_RES_OK;
 }
 
 /**
@@ -318,13 +284,12 @@ static lv_fs_res_t fs_dir_read(lv_fs_drv_t *drv, void *dir_p, char *fn)
  * @param dir_p pointer to an initialized 'fs_read_dir_t' variable
  * @return LV_FS_RES_OK or any error from lv_fs_res_t enum
  */
-static lv_fs_res_t fs_dir_close(lv_fs_drv_t *drv, void *dir_p)
-{
-    lv_res_t res = SD_DIR(dir_p)->close() ? LV_FS_RES_OK : LV_FS_RES_FS_ERR;
+static lv_fs_res_t fs_dir_close(lv_fs_drv_t *drv, void *dir_p) {
+  lv_res_t res = SD_DIR(dir_p)->close() ? LV_FS_RES_OK : LV_FS_RES_FS_ERR;
 
-    lv_mem_free(dir_p);
+  lv_mem_free(dir_p);
 
-    return res;
+  return res;
 }
 #endif
 

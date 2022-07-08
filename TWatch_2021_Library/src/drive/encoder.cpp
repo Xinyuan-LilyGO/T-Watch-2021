@@ -1,29 +1,25 @@
 #include "./TWatch_hal.h"
-#if defined(TWatch_HAL_ENCODER)
-#define ROTARY_ENCODER_STEPS 4
+#if defined(CONFIG_TWATCH_HAS_ENCODER)
 
-void TWatchClass::Encoder_Init()
-{
-    Encoder = new AiEsp32RotaryEncoder(ENCODER_A, ENCODER_B, ENCODER_C, -1, ROTARY_ENCODER_STEPS);
-    Encoder->begin();
-    Encoder->setup(
-        []
-        { Encoder->readEncoder_ISR(); },
-        []
-        { BottonState = true; });
-    Encoder->disableAcceleration();
+void TWatchClass::encoder_init() {
+  encoder = new Encoder(TWATCH_ENCODER_A, TWATCH_ENCODER_B);
+  _lastPosition = encoder->readAndReset();
 }
 
-int32_t TWatchClass::Encoder_GetDiff()
-{
-    int32_t diff = Encoder->encoderChanged();
+int32_t TWatchClass::encoder_get_diff() {
+  int32_t new_position = encoder->read();
+  int8_t diff = 0;
+  if (abs(_lastPosition - new_position) > 3) {
+    if (_lastPosition > new_position)
+      diff = 1;
+    else
+      diff = -1;
+
+    _lastPosition = new_position;
+    DEBUGLN(diff);
     return diff;
+  } else
+    return 0;
 }
 
-bool TWatchClass::Encoder_GetIsPush()
-{
-    bool Botton = BottonState;
-    BottonState = false;
-    return Botton;
-}
 #endif

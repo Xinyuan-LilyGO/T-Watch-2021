@@ -1,6 +1,6 @@
 #include <TWatch_hal.h>
-#include "src/PageManager/PageManager.h"
-#include "src/Utils/Utils.h"
+#include "PageManager/PageManager.h"
+#include "Utils/Utils.h"
 #include "WiFi.h"
 #include "esp_task_wdt.h"
 

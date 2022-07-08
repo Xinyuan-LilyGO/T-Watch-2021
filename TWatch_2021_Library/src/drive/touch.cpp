@@ -1,39 +1,40 @@
 #include "./TWatch_hal.h"
 
-#if defined(TWatch_HAL_Touch)
+#if defined(CONFIG_TWATCH_HAS_CST816S)
 
-void TWatchClass::Touch_Init()
-{
-    Touch = new CST816S_Class;
-    Wire.begin(TWATCH_IICSDA, TWATCH_IICSCL);
-    Touch->begin(Wire, TWATCH_TOUCH_RES, TWATCH_TOUCH_INT);
-    Touch->setTouchInt(false);
+void TWatchClass::touch_init() {
+  touch = new CST816S_Class;
+  Wire.begin(TWATCH_IICSDA, TWATCH_IICSCL);
+  if (touch->begin(Wire, TWATCH_TOUCH_RES, TWATCH_TOUCH_INT))
+    _isinited_cst816s = true;
+  if (_isinited_cst816s) {
+    touch->setTouchInt(false);
+  }
 }
 
-void TWatchClass::Touch_Updata(uint32_t millis, uint32_t time_ms)
-{
-    static uint32_t Millis;
-    portBASE_TYPE xResult;
-    if (millis - Millis > time_ms)
-    {
-        if (Touch->read())
-        {
-            xResult = xEventGroupSetBits(_Hal_IRQ_event, TOUCH_IRQ_BIT);
-            if (xResult == pdTRUE)
-            {
-                // Serial.println("touch event send done");
-            }
+void TWatchClass::touch_updata(uint32_t millis, uint32_t time_ms) {
+  static uint32_t Millis;
+  portBASE_TYPE xResult;
+  if (millis - Millis > time_ms) {
+    if (_isinited_cst816s) {
+      if (touch->read()) {
+        xResult = xEventGroupSetBits(_Hal_IRQ_event, TOUCH_IRQ_BIT);
+        if (xResult == pdTRUE) {
+          // Serial.println("touch event send done");
         }
-        Millis = millis;
+      }
     }
+    Millis = millis;
+  }
 }
-void TWatchClass::Touch_Interrupt(bool enable)
-{
-    Touch->setTouchInt(enable);
+void TWatchClass::touch_interrupt(bool enable) {
+  if (_isinited_cst816s) {
+    touch->setTouchInt(enable);
+  }
 }
 
-bool TWatchClass::Touch_Check() { return Touch->read(); }
-uint16_t TWatchClass::Touch_GetX() { return Touch->getX(); }
-uint16_t TWatchClass::Touch_GetY() { return Touch->getY(); }
+bool TWatchClass::touch_check() { return touch->read(); }
+uint16_t TWatchClass::touch_getX() { return touch->getX(); }
+uint16_t TWatchClass::touch_getY() { return touch->getY(); }
 
 #endif

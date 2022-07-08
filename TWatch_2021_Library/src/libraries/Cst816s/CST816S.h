@@ -94,8 +94,8 @@ private:
 	uint8_t _address;
 	bool _init = false;
 	TwoWire *_i2cPort;
-	uint8_t _res = -1;
-	uint8_t _int = -1;
+	int8_t _res = -1;
+	int8_t _int = -1;
 	uint8_t Touch_Data[10];
 };
 

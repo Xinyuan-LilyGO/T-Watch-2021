@@ -1,8 +1,8 @@
 #include "./TWatch_hal.h"
 
-#if (TWatch_APP_LVGL == 1)
+#if CONFIG_TWATCH_APP_LVGL
 
-#if defined(TWatch_HAS_FFAT)
+#if defined(CONFIG_TWATCH_HAS_FFAT)&& 0
 #include "ff.h"
 /*********************
  *      DEFINES

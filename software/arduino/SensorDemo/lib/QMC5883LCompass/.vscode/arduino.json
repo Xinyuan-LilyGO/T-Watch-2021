@@ -1,6 +1,0 @@
-{
-    "port": "COM57",
-    "configuration": "PartitionScheme=default,UploadSpeed=921600,DebugLevel=none",
-    "board": "espressif:esp32:pico32",
-    "sketch": "examples\\xyz\\xyz.ino"
-}

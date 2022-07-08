@@ -1,11 +1,11 @@
 //#include "Input.h"
 #include "./TWatch_hal.h"
 
-#if (TWatch_APP_LVGL == 1) && defined(TWatch_HAL_Display)
+#if CONFIG_TWATCH_APP_LVGL  && defined(CONFIG_TWATCH_HAS_DISPLAY)
 
 lv_disp_drv_t *disp_drv_p;
 
-void TWatchClass::disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
+void TWatchClass::lv_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
 {
     TFT_eSPI *screen = (TFT_eSPI *)disp->user_data;
     uint32_t w = (area->x2 - area->x1 + 1);
@@ -58,7 +58,7 @@ void TWatchClass::lv_port_disp_init(SCREEN_CLASS *scr)
     lv_disp_drv_init(&disp_drv);
     disp_drv.hor_res = SCREEN_WIDTH;
     disp_drv.ver_res = SCREEN_HEIGHT;
-    disp_drv.flush_cb = disp_flush;
+    disp_drv.flush_cb = lv_disp_flush;
     disp_drv.draw_buf = &draw_buf;
     disp_drv.wait_cb = display_wait_cb;
     disp_drv.user_data = scr;

@@ -1,106 +1,56 @@
 #include "./TWatch_hal.h"
 
-#if defined(TWatch_HAS_SD)
+#if defined(CONFIG_TWATCH_HAS_SD)
 
-static SdFat SD;
-static bool SD_IsReady = false;
-SPIClass _sdspi(HSPI);
-
-static TWatch::SD_CallbackFunction_t SD_EventCallback = nullptr;
-
-/*
- * User provided date time callback function.
- * See SdFile::dateTimeCallback() for usage.
- */
-static void SD_GetDateTime(uint16_t *date, uint16_t *time)
-{
-    /*     RTC_Date clock;
-    clock = GetRTCTime();
-    // return date using FAT_DATE macro to format fields
-    *date = FAT_DATE(clock.year, clock.month, clock.day);
-
-    // return time using FAT_TIME macro to format fields
-    *time = FAT_TIME(clock.hour, clock.minute, clock.second); */
-}
-
-static bool SD_CheckDir(const char *path)
-{
-    bool retval = true;
-    if (!SD.exists(path))
-    {
-        Serial.printf("SD: Auto create path \"%s\"...", path);
-        retval = SD.mkdir(path);
-        Serial.println(retval ? "success" : "failed");
-    }
-    return retval;
-}
-
-bool TWatch::SD_Init()
-{
-    bool retval = true;
-
-    pinMode(SD_CS, INPUT_PULLUP);
-    if (digitalRead(SD_CS))
-    {
-        Serial.println("SD: CARD was not insert");
-        retval = false;
-    }
-    _sdspi.begin(SD_CLK, SD_MISO, SD_MOSI, SD_CS);
-    retval = SD.begin(SdSpiConfig(SD_CS, SHARED_SPI, SD_SCK_MHZ(20), &_sdspi));
-
-    if (retval)
-    {
-        SdFile::dateTimeCallback(SD_GetDateTime);
-        //SD_CheckDir(CONFIG_TRACK_RECORD_FILE_DIR_NAME);
-        //SD_CheckDir(CONFIG_MAP_FILE_DIR_NAME);
-        Serial.println("SD: Init success");
-    }
+bool TWatchClass::sd_check_dir(const char *path, bool create) {
+  if (!SD.exists(path)) {
+    if (create)
+      SD.mkdir(path);
     else
-    {
-        Serial.println("SD: CARD ERROR");
+      return false;
+  }
+  return true;
+}
+
+bool TWatchClass::sd_init() {
+  bool retval = true;
+  _sd_spi.begin(TWATCH_SD_CLK, TWATCH_SD_MISO, TWATCH_SD_MOSI, TWATCH_SD_CS);
+
+  retval = SD.begin(TWATCH_SD_CS, _sd_spi);
+  if (retval) {
+    uint8_t cardType = SD.cardType();
+
+    if (cardType == CARD_NONE) {
+      DEBUGLN("No SD card attached");
+      return false;
     }
-
-    SD_IsReady = retval;
-
-    return retval;
-}
-
-bool TWatch::SD_GetReady()
-{
-    return SD_IsReady;
-}
-
-static void SD_Check(bool isInsert)
-{
-    if (isInsert)
-    {
-        bool ret = TWatch::SD_Init();
-
-        if (ret && SD_EventCallback)
-        {
-            SD_EventCallback(true);
-        }
+    Serial.print("SD Card Type: ");
+    if (cardType == CARD_MMC) {
+      DEBUGLN("MMC");
+    } else if (cardType == CARD_SD) {
+      DEBUGLN("SDSC");
+    } else if (cardType == CARD_SDHC) {
+      DEBUGLN("SDHC");
+    } else {
+      DEBUGLN("UNKNOWN");
     }
-    else
-    {
-        SD_IsReady = false;
+    DEBUGF("sd card size:%d MB", SD.cardSize() / 1024 / 1024);
+    DEBUGLN();
+  } else {
+  }
 
-        if (SD_EventCallback)
-        {
-            SD_EventCallback(false);
-        }
-    }
+  return retval;
 }
 
-void TWatch::SD_SetEventCallback(SD_CallbackFunction_t callback)
-{
-    SD_EventCallback = callback;
+bool TWatchClass::sd_is_ready() {
+  if (SD.numSectors() > 0)
+    return true;
+  else
+    return false;
 }
 
-void TWatch::SD_Update()
-{
-    bool isInsert = (digitalRead(SD_CS) == LOW);
-    //__ValueMonitor(isInsert, SD_Check(isInsert));
+fs::SDFS TWatchClass::sd_get_instance() {
+  return SD;
 }
 
 #endif
