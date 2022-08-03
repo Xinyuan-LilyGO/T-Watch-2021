@@ -52,6 +52,8 @@ void ui_init(void) {
   ui_create_test_project(cont, "input device detection", app_io_test);
   ui_create_test_project(cont, "WIFI", app_wifi_func);
   ui_create_test_project(cont, "Bluetooth", app_bluetooth_scan_func);
+
+
 }
 
 void ui_create_test_project(lv_obj_t *parent, char *text, lv_event_cb_t event_cb) {

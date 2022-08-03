@@ -52,6 +52,9 @@ void app_io_test(lv_event_t *e) {
 
 #if defined(TWatch2021_V2)
   lv_group_t *g = lv_group_create();
+  lv_indev_set_group(ttgo->lv_encoder_handle, g);
+  lv_group_set_default(g);
+
   const char *opts = "1\n2\n3\n4\n5\n6\n7\n8\n9\n10";
   lv_obj_t *roller = lv_roller_create(cout);
   lv_roller_set_options(roller, opts, LV_ROLLER_MODE_INFINITE);
@@ -59,8 +62,7 @@ void app_io_test(lv_event_t *e) {
   lv_obj_align(roller, LV_ALIGN_CENTER, 0, 30);
   lv_roller_set_selected(roller, 5, LV_ANIM_ON);
 
-  lv_group_add_obj(g, roller);
-  lv_indev_set_group(lv_indev_get_act(), g);
+  // lv_group_add_obj(g, roller);
 
   lv_event_send(roller, LV_EVENT_FOCUSED, NULL);
 #endif
@@ -100,6 +102,7 @@ void app_sleep_cb(lv_event_t *e) {
   uint32_t *count = (uint32_t *)lv_event_get_user_data(e);
   TWatchClass *ttgo = TWatchClass::getWatch();
   if (code == LV_EVENT_CLICKED) {
+    ttgo->touch_interrupt(true);
     ttgo->hal_sleep(true);
   }
 }

@@ -2,7 +2,7 @@
 
 #include "TWatch_hal.h"
 
-#define FACTORY_SSID "xinyuandianzi"
-#define FACTORY_PASS "AA15994823428"
+#define FACTORY_SSID "your-ssid"
+#define FACTORY_PASS "your-password"
 
 void app_wifi_func(lv_event_t *e);

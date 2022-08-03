@@ -1,0 +1,13 @@
+{
+    "name": "mini-wifi",
+    "keywords": "iot, internet of things, wifi helper",
+    "description": "A collection of utility functions for using wifi on an ESP8266.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pauls-3d-things/mini-wifi.git",
+        "branch": "master"
+    },
+    "frameworks": "arduino",
+    "platforms": ["espressif8266","espressif32"],
+    "version": "2.0.1"
+}

@@ -103,7 +103,7 @@ void timer_event_cb(lv_timer_t *timer) {
       lv_table_set_cell_value(table, 7, 2, LV_SYMBOL_OK);
     } else {
       lv_table_set_cell_value(table, 7, 2, LV_SYMBOL_CLOSE);
-      ttgo->sd_init();
+      // ttgo->sd_init();
     }
 
     TinyGPSPlus gps = ttgo->get_gps_instance();

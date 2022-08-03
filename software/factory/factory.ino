@@ -22,7 +22,7 @@ void encoder_btn_event_cb(void *param) {
 void setup(void) {
   Serial.begin(115200);
   Serial.println("factory test");
-  // esp_task_wdt_deinit();
+
   ttgo = TWatchClass::getWatch();
   ttgo->backlight_set_value(100);
 
@@ -33,8 +33,10 @@ void setup(void) {
   ttgo->button_bind_event(TWATCH_ENCODER_BTN, BUTTON_CLICK, encoder_btn_event_cb, nullptr);
 #endif
   ui_init();
+  ttgo->gps_serial_output(true);
   ttgo->hal_auto_update(true, 1);
 }
 
 void loop(void) {
+  delay(500);
 }

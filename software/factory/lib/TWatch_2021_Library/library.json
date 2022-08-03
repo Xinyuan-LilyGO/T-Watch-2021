@@ -1,0 +1,20 @@
+{
+    "name": "TWatch_2021_Library",
+    "keywords": "Device Conterl,TWatch,Watch,TTGO",
+    "description": "Arduino Library for  T-Watch2021 development kit",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Xinyuan-LilyGO/T-Watch-2021.git"
+    },
+    "authors": [
+        {
+            "name": "Xinyuan Electronics",
+            "email": "lily@lilygo.cc",
+            "url": "https://github.com/Xinyuan-LilyGO",
+            "maintainer": true
+        }
+    ],
+    "version": "0.1.0",
+    "frameworks": "arduino",
+    "platforms": "esp32"
+}

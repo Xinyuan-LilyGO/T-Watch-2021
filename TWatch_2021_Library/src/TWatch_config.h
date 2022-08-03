@@ -10,14 +10,14 @@ If you don't know which one to choose, look at the silkscreen on the circuit boa
 // #define TWatch2021_V2
 /****************** Generic function, no need to be annotable *******************/
 // BSP CONFIG
-// #define CONFIG_TWATCH_HAS_PSRAM
+#define CONFIG_TWATCH_HAS_PSRAM
 #define CONFIG_TWATCH_HAS_POWER
-// #define CONFIG_TWATCH_HAS_FFAT
-/*   ├─ */ #define FFAT_MOUNT_POINT "/ffat"
+#define CONFIG_TWATCH_HAS_LFS
+/*   ├─ */ #define LFS_MOUNT_POINT "/lfs"
 #define CONFIG_TWATCH_HAS_MOTOR
 #define CONFIG_TWATCH_HAS_DISPLAY
-    /*   ├─ */ #define USE_TFT_DMA   0 // 0-1
-    /*   ├─ */ #define TFT_Rotation  0 // 0-7
+    /*   ├─ */ #define USE_TFT_DMA   0 // 0-1  If this option is enabled, DISP_BUF_FROM_PSRAM conflicts. Only one of the two can be enabled
+    /*   ├─ */ #define TFT_ROTATION  0 // 0-7
     /*   ├─ */ #define SCREEN_WIDTH  240
     /*   ├─ */ #define SCREEN_HEIGHT 240
 
@@ -28,10 +28,16 @@ If you don't know which one to choose, look at the silkscreen on the circuit boa
 #define CONFIG_TWATCH_HAS_CST816S
 
 // APP CONFIG
-#define CONFIG_TWATCH_USE_DEBUG       1
-#define CONFIG_TWATCH_APP_LVGL        0
-    /*    ├─ */ #define DISP_BUF_SIZE /*  */ (SCREEN_WIDTH *SCREEN_HEIGHT * 0.5)
-
+#define CONFIG_TWATCH_USE_DEBUG             1
+#define CONFIG_TWATCH_APP_LVGL              0
+    /*    ├─ */ #define DISP_BUF_SIZE       /**/ (SCREEN_WIDTH *SCREEN_HEIGHT * 0.5)
+    /*    ├─ */ #define DISP_BUF_FROM_PSRAM 0 // Turning this on makes the screen appear smoother, but it uses a lot of RAM.
+/*
+Use LVGL built-in file system
+SD: lv_img_set_src(wp, "A:/sd/logo.sjpg");
+LFS: lv_img_set_src(wp, "A:/lfs/logo.jpg");
+ */
+#define CONFIG_TWATCH_APP_LVGL_LFS          1
 /****************** Generic function, no need to be annotable *******************/
 
 /************************* Version exclusive features ***************************/
