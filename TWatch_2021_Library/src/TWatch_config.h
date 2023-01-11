@@ -37,7 +37,7 @@ Use LVGL built-in file system
 SD: lv_img_set_src(wp, "A:/sd/logo.sjpg");
 LFS: lv_img_set_src(wp, "A:/lfs/logo.jpg");
  */
-#define CONFIG_TWATCH_APP_LVGL_LFS          1
+#define CONFIG_TWATCH_APP_LVGL_LFS          0
 /****************** Generic function, no need to be annotable *******************/
 
 /************************* Version exclusive features ***************************/
