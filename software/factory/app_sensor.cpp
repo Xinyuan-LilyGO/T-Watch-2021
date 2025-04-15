@@ -7,7 +7,11 @@ typedef struct {
 } Peripherals_unit_t;
 
 Peripherals_unit_t peri_list[] = {
+#if defined(CONFIG_TWATCH_HAS_QMC5883P)
+    {"QMC5883P", 0X2C},
+#elif defined(CONFIG_TWATCH_HAS_QMC5883L)
     {"QMC5883L", 0x0D},
+#endif
     {"CST816", 0X15},
     {"BMA423", 0X18},
     {"PCF8563", 0X51},

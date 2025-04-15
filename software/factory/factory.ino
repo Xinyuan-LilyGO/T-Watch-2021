@@ -33,7 +33,10 @@ void setup(void) {
   ttgo->button_bind_event(TWATCH_ENCODER_BTN, BUTTON_CLICK, encoder_btn_event_cb, nullptr);
 #endif
   ui_init();
+
+#ifdef CONFIG_TWATCH_HAS_GPS
   ttgo->gps_serial_output(true);
+#endif
   ttgo->hal_auto_update(true, 1);
 }
 
