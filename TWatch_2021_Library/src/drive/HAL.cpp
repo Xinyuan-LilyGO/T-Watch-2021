@@ -8,12 +8,12 @@ EventGroupHandle_t TWatchClass::_hal_button_event = nullptr;
 #endif
 
 void TWatchClass::hal_init(void) {
-  // #if defined(CONFIG_TWATCH_HAS_DISPLAY) && (TWatch_APP_LVGL == 1)
+// #if defined(CONFIG_TWATCH_HAS_DISPLAY) && (TWatch_APP_LVGL == 1)
   // Move the malloc process to Init() to make sure that the largest heap can be used for this buffer.
   // lv_disp_buf_p = static_cast<lv_color_t *>(malloc(DISP_BUF_SIZE * sizeof(lv_color_t)));
   // if (lv_disp_buf_p == nullptr)
   //     LV_LOG_WARN("lv_port_disp_init malloc failed!\n");
-  // #endif
+// #endif
 
   DEBUGF("flash size : %d kb\r\n", ESP.getFlashChipSize() / 1024);
   DEBUGF("psram size : %d kb\r\n", ESP.getPsramSize() / 1024);
@@ -64,7 +64,7 @@ void TWatchClass::hal_init(void) {
   sd_init();
 #endif
 
-#if defined(CONFIG_TWATCH_HAS_QMC5883L)
+#if defined(CONFIG_TWATCH_HAS_QMC5883L) || defined(CONFIG_TWATCH_HAS_QMC5883P)
   DEBUGLN("Initializing the magnetometer");
   qmc5883l_init();
 #endif
@@ -135,7 +135,7 @@ void TWatchClass::hal_update_task(void *param) {
 #if defined(CONFIG_TWATCH_HAS_PCF8563)
     _ttgo->rtc_updata(ms, 1000);
 #endif
-#if defined(CONFIG_TWATCH_HAS_QMC5883L)
+#if defined(CONFIG_TWATCH_HAS_QMC5883L) || defined(CONFIG_TWATCH_HAS_QMC5883P)
     _ttgo->qmc5883l_updata(ms, 100);
 #endif
 #if defined(CONFIG_TWATCH_HAS_BMA423)
@@ -153,9 +153,9 @@ void TWatchClass::hal_update_task(void *param) {
 #if defined(CONFIG_TWATCH_HAS_BME280)
     _ttgo->bme280_updata(ms, 41);
 #endif
-// #if defined(TWatch_HAL_AIO_INT)
+#if defined(TWatch_HAL_AIO_INT)
     _ttgo->hal_aio_irq_cb();
-// #endif
+#endif
 #if CONFIG_TWATCH_USE_DEBUG
     // Debugloop(ms, 1000);
 #endif
@@ -208,12 +208,12 @@ void TWatchClass::hal_sleep(bool deep) {
   }
 }
 
+#if defined(TWatch_HAL_AIO_INT)
 void TWatchClass::hal_aio_irq_cb() {
   uint16_t int_status = 0;
   if (xEventGroupGetBits(_Hal_IRQ_event) & EVENT_IRQ_BIT) {
     xEventGroupClearBits(_Hal_IRQ_event, EVENT_IRQ_BIT);
     DEBUGLN("get irq");
-#if defined(TWatch_HAL_AIO_INT)
 #if defined(CONFIG_TWATCH_HAS_PCF8563)
     if (Rtc->alarmActive()) // Check if it is an alarm interrupt
     {
@@ -223,7 +223,6 @@ void TWatchClass::hal_aio_irq_cb() {
         _alarm_irq_cb(NULL);
       }
     } else
-#endif
 #endif
     {
 #if defined(CONFIG_TWATCH_HAS_BMA423)
@@ -268,6 +267,7 @@ void TWatchClass::hal_aio_irq_cb() {
     }
   }
 }
+#endif
 
 #if defined(CONFIG_TWATCH_HAS_SD) || defined(CONFIG_TWATCH_HAS_FFAT)
 void listDir(fs::FS &fs, const char *dirname, uint8_t levels) {

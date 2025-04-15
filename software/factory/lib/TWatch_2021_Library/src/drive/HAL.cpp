@@ -64,7 +64,7 @@ void TWatchClass::hal_init(void) {
   sd_init();
 #endif
 
-#if defined(CONFIG_TWATCH_HAS_QMC5883L)
+#if defined(CONFIG_TWATCH_HAS_QMC5883L) || defined(CONFIG_TWATCH_HAS_QMC5883P)
   DEBUGLN("Initializing the magnetometer");
   qmc5883l_init();
 #endif
@@ -135,7 +135,7 @@ void TWatchClass::hal_update_task(void *param) {
 #if defined(CONFIG_TWATCH_HAS_PCF8563)
     _ttgo->rtc_updata(ms, 1000);
 #endif
-#if defined(CONFIG_TWATCH_HAS_QMC5883L)
+#if defined(CONFIG_TWATCH_HAS_QMC5883L) || defined(CONFIG_TWATCH_HAS_QMC5883P)
     _ttgo->qmc5883l_updata(ms, 100);
 #endif
 #if defined(CONFIG_TWATCH_HAS_BMA423)

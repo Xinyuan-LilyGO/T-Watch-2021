@@ -215,7 +215,7 @@ public:
   float bma423_get_temperature(uint8_t temp_unit);
 #endif
 
-#if defined(CONFIG_TWATCH_HAS_QMC5883L)
+#if defined(CONFIG_TWATCH_HAS_QMC5883L) || defined(CONFIG_TWATCH_HAS_QMC5883P)
   /* MAG Sensor : qmc5883l*/
   void qmc5883l_init();
   void qmc5883l_updata(uint32_t millis, uint32_t time_ms);
@@ -388,6 +388,10 @@ private:
 #if defined(CONFIG_TWATCH_HAS_QMC5883L)
   /* MAG Sensor : qmc5883l*/
   QMC5883LCompass *MAG = nullptr;
+  bool _isinited_qmc5883l = false;
+  int Azimuth;
+  int magX, magY, magZ;
+#elif defined(CONFIG_TWATCH_HAS_QMC5883P)
   bool _isinited_qmc5883l = false;
   int Azimuth;
   int magX, magY, magZ;

@@ -6,7 +6,11 @@ If you don't know which one to choose, look at the silkscreen on the circuit boa
 */
 
 // #define TWatch2021_V1
-// #define TWatch2021_V1_2
+
+#ifndef TWatch2021_V1_2
+#define TWatch2021_V1_2
+#endif
+
 // #define TWatch2021_V2
 /****************** Generic function, no need to be annotable *******************/
 // BSP CONFIG
@@ -23,7 +27,8 @@ If you don't know which one to choose, look at the silkscreen on the circuit boa
 
 #define CONFIG_TWATCH_HAS_BUTTON
 #define CONFIG_TWATCH_HAS_BMA423
-#define CONFIG_TWATCH_HAS_QMC5883L
+// #define CONFIG_TWATCH_HAS_QMC5883L
+#define CONFIG_TWATCH_HAS_QMC5883P
 #define CONFIG_TWATCH_HAS_PCF8563
 #define CONFIG_TWATCH_HAS_CST816S
 

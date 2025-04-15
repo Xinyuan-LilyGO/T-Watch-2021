@@ -53,7 +53,7 @@
 #include "libraries/lvgl/lvgl.h"
 #endif
 #include "soc/soc_ulp.h"
-// #include "libraries/SdFat/src/SdFat.h"
+//#include "libraries/SdFat/src/SdFat.h"
 /* #include "WiFi.h"
 #include "HTTPClient.h" */
 // #include "libraries/BluetoothSerial/src/BluetoothSerial.h"
@@ -132,24 +132,6 @@ public:
 #else
     pinMode(TWATCH_TOUCH_INT, INPUT_PULLUP);
     pinMode(TWATCH_BMA_INT_2, INPUT);
-    attachInterrupt(
-        TWATCH_TOUCH_INT,
-        []() {
-          portBASE_TYPE task_woken, xResult;
-          if ((xEventGroupGetBits(_ttgo->_Hal_IRQ_event) & EVENT_IRQ_BIT) != EVENT_IRQ_BIT) {
-            xResult = xEventGroupSetBitsFromISR(_ttgo->_Hal_IRQ_event, EVENT_IRQ_BIT, &task_woken);
-          }
-        },
-        FALLING);
-    attachInterrupt(
-        TWATCH_BMA_INT_2,
-        []() {
-          portBASE_TYPE task_woken, xResult;
-          if ((xEventGroupGetBits(_ttgo->_Hal_IRQ_event) & EVENT_IRQ_BIT) != EVENT_IRQ_BIT) {
-            xResult = xEventGroupSetBitsFromISR(_ttgo->_Hal_IRQ_event, EVENT_IRQ_BIT, &task_woken);
-          }
-        },
-        FALLING);
 #endif
   };
 
@@ -233,7 +215,7 @@ public:
   float bma423_get_temperature(uint8_t temp_unit);
 #endif
 
-#if defined(CONFIG_TWATCH_HAS_QMC5883L)
+#if defined(CONFIG_TWATCH_HAS_QMC5883L) || defined(CONFIG_TWATCH_HAS_QMC5883P)
   /* MAG Sensor : qmc5883l*/
   void qmc5883l_init();
   void qmc5883l_updata(uint32_t millis, uint32_t time_ms);
@@ -321,10 +303,10 @@ public:
 
 private:
   TaskHandle_t HAL_Update_Handle = NULL;
-  // #if defined(TWatch_HAL_AIO_INT)
+#if defined(TWatch_HAL_AIO_INT)
   irq_Fun_cb_t _alarm_irq_cb = nullptr;
   struct irq_bma_Fun_cb_t _bma_irq_cb = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
-  // #endif
+#endif
 
 #if defined(CONFIG_TWATCH_HAS_POWER)
   /* Power */
@@ -406,6 +388,10 @@ private:
 #if defined(CONFIG_TWATCH_HAS_QMC5883L)
   /* MAG Sensor : qmc5883l*/
   QMC5883LCompass *MAG = nullptr;
+  bool _isinited_qmc5883l = false;
+  int Azimuth;
+  int magX, magY, magZ;
+#elif defined(CONFIG_TWATCH_HAS_QMC5883P)
   bool _isinited_qmc5883l = false;
   int Azimuth;
   int magX, magY, magZ;
